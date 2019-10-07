@@ -31,11 +31,11 @@ def getDates(start, end):
 
 # Helper function for loading data into a dataframe
 def loadDataframe(files):
-    df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0', 'pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime',
-                               'rssi', 'temperature', 'humidity', 'pm2_5_cf_1', 'a_h', 'device_loc_typ', 'high_reading_flag', 'hidden', 'sensor_id', 'sensor_name',
-                               'lat', 'lon', 'parent_id', 'is_owner', 'city', 'county', 'zipcode', 'created_at', 'year', 'month', 'day', 'hour', 'minute', 'wban_number',
-                               'call_sign', 'call_sign2', 'interval', 'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts',
-                               'gust_speed', 'variable_winds', 'variable_wind_info', 'sys_maint_reqd'])
+    df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0','pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime','rssi', 
+                       'temperature', 'humidity', 'pm2_5_cf_1', 'a_h', 'device_loc_typ', 'high_reading_flag', 'hidden', 'sensor_id', 'sensor_name', 'lat', 'lon', 'parent_id', 
+                       'is_owner', 'city', 'county', 'zipcode', 'created_at', 'year', 'month', 'day', 'hour', 'minute', 'wban_number', 'call_sign', 'call_sign2', 'interval', 
+                       'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts', 'gust_speed', 'variable_winds', 'variable_wind_info', 
+                       'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
     for file in files:
         file_name = "{}.parquet".format(file)
