@@ -38,7 +38,7 @@ def loadDataframe(files):
                        'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
     for file in files:
-        file_name = "{}.parquet".format(file)
+        file_name = "../data/purpleair/{}.parquet".format(file)
         if path.exists(file_name):
             tmp_df = pd.read_parquet(file_name)
             df = pd.concat([df,tmp_df],ignore_index=True)
