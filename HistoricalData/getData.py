@@ -5,6 +5,10 @@ from datetime import date, timedelta
 from os import path
 import pandas as pd
 
+import boto3
+import s3fs
+from fastparquet import ParquetFile
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -31,6 +35,10 @@ def getDates(start, end):
 
 # Helper function for loading data into a dataframe
 def loadDataframe(files):
+            
+    s3 = s3fs.S3FileSystem()
+    myopen = s3.open
+    
     df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0','pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime','rssi', 
                        'temperature', 'humidity', 'pm2_5_cf_1', 'device_loc_typ', 'is_owner', 'sensor_id', 'sensor_name', 'parent_id','lat', 'lon',  'thingspeak_primary_id', 
                        'thingspeak_primary_id_read_key', 'thingspeak_secondary_id', 'thingspeak_secondary_id_read_key', 'a_h', 'high_reading_flag', 'hidden',
@@ -38,13 +46,10 @@ def loadDataframe(files):
                        'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts', 'gust_speed', 'variable_winds', 'variable_wind_info', 
                        'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
-    for file in files:
-        file_name = "{}.parquet".format(file)
-        if path.exists(file_name):
-            tmp_df = pd.read_parquet(file_name)
-            df = pd.concat([df,tmp_df],ignore_index=True)
-        else:
-            print("File {} does not exist".format(file_name))
+    for filenm in files:
+        pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedDaily/{}.parquet'.format(filenm), open_with=myopen)
+        tmp_df=pf.to_pandas()
+        df = pd.concat([df, tmp_df],ignore_index=True)
 
     return df
 
