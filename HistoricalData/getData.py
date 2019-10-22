@@ -38,7 +38,9 @@ def loadDataframe(files):
             
     s3 = s3fs.S3FileSystem()
     myopen = s3.open
-    
+    s3_resource = boto3.resource('s3')
+    df_list = []
+
     df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0','pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime','rssi', 
                        'temperature', 'humidity', 'pm2_5_cf_1', 'device_loc_typ', 'is_owner', 'sensor_id', 'sensor_name', 'parent_id','lat', 'lon',  'thingspeak_primary_id', 
                        'thingspeak_primary_id_read_key', 'thingspeak_secondary_id', 'thingspeak_secondary_id_read_key', 'a_h', 'high_reading_flag', 'hidden',
@@ -47,10 +49,17 @@ def loadDataframe(files):
                        'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
     for filenm in files:
-        pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedDaily/{}.parquet'.format(filenm), open_with=myopen)
-        tmp_df=pf.to_pandas()
-        df = pd.concat([df, tmp_df],ignore_index=True)
+        try:
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedDailyInterpolated/{}.parquet'.format(filenm)).load()
+            pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedDailyInterpolated/{}.parquet'.format(filenm), open_with=myopen)
+            tmp_df=pf.to_pandas()
+            df_list.append(tmp_df)
+        except:
+            print("Processing {} failed".format(filenm))
+            continue
 
+    df = pd.concat(df_list, axis=0, ignore_index=True)
+            
     return df
 
 # Main function for getting data
