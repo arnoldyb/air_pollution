@@ -47,7 +47,7 @@ def loadDataframe(files):
                        'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
     for filenm in files:
-        pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedDaily/{}.parquet'.format(filenm), open_with=myopen)
+        pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedDailyInterpolated/{}.parquet'.format(filenm), open_with=myopen)
         tmp_df=pf.to_pandas()
         df = pd.concat([df, tmp_df],ignore_index=True)
 
