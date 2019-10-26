@@ -112,6 +112,9 @@ def get_data(UP_LEFT, UP_RIGHT, DOWN_RIGHT, DOWN_LEFT, START_DATE, END_DATE, STA
             
             # Filter data for input  hours
             df = df[(df.hour >= START_HOUR) & (df.hour <= END_HOUR)]
+            
+            # Filter out data for devices located inside
+            df = df[df.device_loc_typ == 'outside']
             df.reset_index(inplace=True, drop=True)
             return df
         else:
