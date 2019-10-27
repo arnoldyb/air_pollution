@@ -4,6 +4,7 @@ import datetime
 from datetime import date, timedelta
 from os import path
 import pandas as pd
+from collections import OrderedDict
 
 import boto3
 import s3fs
@@ -33,8 +34,17 @@ def getDates(start, end):
 
     return date_list
 
+# Helper function for getting months in a given range
+def getMonths(start, end):
+    start_date = datetime.datetime.strptime(start, "%Y/%m/%d").date()
+    end_date = datetime.datetime.strptime(end, "%Y/%m/%d").date()
+
+    mth_list = list(OrderedDict(((start_date + timedelta(_)).strftime(r"%Y%m"), None) for _ in range((end_date - start_date).days)).keys())
+        
+    return mth_list
+
 # Helper function for loading data into a dataframe
-def loadDataDailyframe(files, folder):
+def loadDataframe(files, folder):
             
     s3 = s3fs.S3FileSystem()
     myopen = s3.open
@@ -42,11 +52,11 @@ def loadDataDailyframe(files, folder):
     df_list = []
 
     df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0','pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime','rssi', 
-                       'temperature', 'humidity', 'pm2_5_cf_1', 'device_loc_typ', 'is_owner', 'sensor_id', 'sensor_name', 'parent_id','lat', 'lon',  'thingspeak_primary_id', 
-                       'thingspeak_primary_id_read_key', 'thingspeak_secondary_id', 'thingspeak_secondary_id_read_key', 'a_h', 'high_reading_flag', 'hidden',
-                       'city', 'county', 'zipcode', 'created_at', 'year', 'month', 'day', 'hour', 'minute', 'wban_number', 'call_sign', 'call_sign2', 'interval', 
-                       'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts', 'gust_speed', 'variable_winds', 'variable_wind_info', 
-                       'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
+                           'temperature', 'humidity', 'pm2_5_cf_1', 'device_loc_typ', 'is_owner', 'sensor_id', 'sensor_name', 'parent_id','lat', 'lon',  'thingspeak_primary_id', 
+                           'thingspeak_primary_id_read_key', 'thingspeak_secondary_id', 'thingspeak_secondary_id_read_key', 'a_h', 'high_reading_flag', 'hidden',
+                           'city', 'county', 'zipcode', 'created_at', 'year', 'month', 'day', 'hour', 'minute', 'wban_number', 'call_sign', 'call_sign2', 'interval', 
+                           'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts', 'gust_speed', 'variable_winds', 'variable_wind_info', 
+                           'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
 
     for filenm in files:
         try:
@@ -59,35 +69,6 @@ def loadDataDailyframe(files, folder):
             continue
 
     df = pd.concat(df_list, axis=0, ignore_index=True)
-            
-    return df
-
-# Helper function for loading data into a dataframe
-def loadDataframe(files, folder):
-            
-    s3 = s3fs.S3FileSystem()
-    myopen = s3.open
-    s3_resource = boto3.resource('s3')
-    df_list = []
-    
-    if folder == 'Daily':
-        folder_name = 'CombinedDailyInterpolated'
-        df = loadDataDailyframe(files, folder_name)
-    else:
-        folder_name = 'CombinedMonthly'
-
-        df = pd.DataFrame(columns=['0_3um', '0_5um', '1_0um', '2_5um', '5_0um', '10_0um', 'pm1_0','pm10_0', 'created', 'pm1_0_atm', 'pm2_5_atm', 'pm10_0_atm', 'uptime','rssi', 
-                           'temperature', 'humidity', 'pm2_5_cf_1', 'device_loc_typ', 'is_owner', 'sensor_id', 'sensor_name', 'parent_id','lat', 'lon',  'thingspeak_primary_id', 
-                           'thingspeak_primary_id_read_key', 'thingspeak_secondary_id', 'thingspeak_secondary_id_read_key', 'a_h', 'high_reading_flag', 'hidden',
-                           'city', 'county', 'zipcode', 'created_at', 'year', 'month', 'day', 'hour', 'minute', 'wban_number', 'call_sign', 'call_sign2', 'interval', 
-                           'call_sign3', 'zulu_time', 'report_modifier', 'wind_data', 'wind_direction', 'wind_speed', 'gusts', 'gust_speed', 'variable_winds', 'variable_wind_info', 
-                           'sys_maint_reqd', 'epa_pm25_unit', 'epa_pm25_value', 'raw_concentration', 'aqi', 'category', 'site_name', 'agency_name', 'full_aqs_code', 'intl_aqs_code'])
-
-        try:
-            pf=ParquetFile('midscapstone-whos-polluting-my-air/{}/{}.parquet'.format(folder_name, '201909'), open_with=myopen)
-            df=pf.to_pandas()
-        except:
-            print("Processing failed")
             
     return df
 
@@ -104,8 +85,14 @@ def get_data(UP_LEFT, UP_RIGHT, DOWN_RIGHT, DOWN_LEFT, START_DATE, END_DATE, STA
 
     try:
         if startfile <= endfile:
-            file_list = getDates(START_DATE, END_DATE)
-            df = loadDataframe(file_list, FOLDER)
+            if FOLDER == 'Daily':
+                file_list = getDates(START_DATE, END_DATE)
+                folder_name = 'CombinedDailyInterpolated'
+            else:
+                file_list = getMonths(START_DATE, END_DATE)
+                folder_name = 'CombinedMonthly'
+                
+            df = loadDataframe(file_list, folder_name)
             # Filter data for input bounding box
             df = df[(df.lat > lat_min) & (df.lat < lat_max) 
                               & (df.lon > lon_min) & (df.lon < lon_max)]
