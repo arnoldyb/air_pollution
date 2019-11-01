@@ -110,3 +110,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+initial_looks/data/
+SingleDayAnalysis/.ipynb_checkpoints/
+SingleDayAnalysis/__pycache__/
+
