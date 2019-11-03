@@ -1,0 +1,279 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #f2f2f2;
+    font-family: 'Slabo 27px', serif;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:active {
+    text-decoration: underline;
+}
+
+#home {
+    color: #009999
+}
+
+.coverImage {
+    background-image: url('images/city1.jpg');
+    margin-top: -20px;
+    width: 100%;
+    height: 110vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    text-align: center;
+    position: relative
+}
+
+.overlay {
+    width: 35%;
+    position: absolute;
+    top: 25%;
+    left: 30%;
+    background-color: rgba(0, 0, 0, 0.5);
+    ;
+}
+
+.coverTitle {
+    text-align: center;
+    color: #eee;
+    font-size: 38pt;
+    letter-spacing: 3px;
+    margin-bottom: 0;
+}
+
+.coverCaption {
+    text-align: center;
+    color: #eee;
+    font-size: 25px;
+    letter-spacing: 3px;
+}
+
+#coverBtn {
+    background-color: #009999;
+    color: white;
+    font-size: 20px;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: none;
+    align-content: center;
+}
+
+.picCredit {
+    color: white;
+    text-align: right;
+    padding-top: 40rem;
+    font-size: x-small;
+}
+
+#container {
+    width: 100%;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+.topBar {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 0px;
+    padding-top: 20px;
+}
+
+.topBar li {
+    margin: 0 50px;
+    color: #eee;
+    font-size: 20px;
+}
+
+.introTitle {
+    color: #009999;
+    font-size: 35px;
+    padding: 30px;
+    padding-bottom: 0;
+}
+
+.introDetails {
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    padding-bottom: 5%;
+    color: #595959;
+    line-height: 30px;
+    font-size: 14pt;
+}
+
+
+/* Approach styles*/
+
+#approach {
+    height: auto;
+    background-color: #3d5c5c;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.approachTitle {
+    color: #eee;
+    font-size: 35px;
+    padding: 30px;
+    padding-bottom: 0;
+}
+
+#approachContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.approachDivs {
+    margin: 3%;
+    margin-bottom: 5%;
+    width: 350px;
+    height: auto;
+    color: #4d4d4d;
+    background-color: #f2f2f2;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    box-shadow: 2px 3px #f2f2f2;
+}
+
+.approachDivs h3 {
+    text-align: center;
+    text-decoration: none
+}
+
+.approachDivs p {
+    margin: 5%
+}
+
+.approachDivs hr {
+    width: 70%;
+    height: 2px;
+    background-color: #009999;
+    border: none;
+}
+
+
+/* Demo styles*/
+
+#demo {
+    height: auto;
+    background-color: #d9d9d9;
+    margin-top: -30px;
+}
+
+.demoContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: auto
+}
+
+.demoP {
+    text-align: center;
+    font-size: 28px;
+    color: #595959;
+}
+
+.demoButton {
+    background-color: #009999;
+    color: #FFFFFF;
+    border-radius: 8px;
+    font-size: 22px;
+    padding: 12px 18px;
+    margin-bottom: 50px;
+    align-self: center;
+}
+
+
+/* Team styles*/
+
+#team {
+    background-color: #999999;
+    margin-top: -40px;
+    height: auto;
+    padding-bottom: 5%;
+}
+
+#teamContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tMateContainer {
+    position: relative;
+    width: 200px;
+    height: 220px;
+    margin: 5px
+}
+
+.teamPics {
+    display: block;
+    width: 200px;
+    height: 220px;
+    margin-bottom: 5rem;
+}
+
+.picOverlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: .5s ease;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.tMateContainer:hover .picOverlay {
+    opacity: 1;
+}
+
+.text {
+    color: white;
+    font-size: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.name {
+    align-self: center;
+    color: #FFFFFF;
+}
+
+
+/* Footer styles*/
+
+#footer {
+    width: 100%;
+    height: 10vh;
+    background-color: #404040;
+}
+
+#footer p {
+    text-align: center;
+    color: white;
+    padding: 22px;
+    font-size: 12pt;
+    margin: 0px;
+}
