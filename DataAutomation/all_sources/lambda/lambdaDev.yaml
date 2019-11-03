@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Lambda CloudFomration for AirPollution
+
+Resources:
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/
+      Handler: app.handler
+      Runtime: python3.7
+      MemorySize: 1024
+      Timeout: 900
+      Role: arn:aws:iam::882437125729:role/service-role/getPurpleAirData-role-3fp1q80m
+      Environment:
+        Variables:
+          MTH: 'input'
+          STINDX: 0
+          ENDINDX: 0
+          DATEINT: 0
+          YR: 'input'
