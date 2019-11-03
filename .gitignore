@@ -2,3 +2,11 @@ initial_looks/.ipynb_checkpoints/
 initial_looks/data/
 SingleDayAnalysis/.ipynb_checkpoints/
 SingleDayAnalysis/__pycache__/
+HistoricalData/.ipynb_checkpoints/
+HistoricalData/__pycache__/
+DataAutomation/all_sources/src/.ipynb_checkpoints/
+DataAutomation/epa/.ipynb_checkpoints/
+DataAutomation/epa/src/.ipynb_checkpoints/
+DataAutomation/.DS_Store
+DataAutomation/all_sources/.DS_Store
+DataAutomation/all_sources/src/dataengtest.ipynb
