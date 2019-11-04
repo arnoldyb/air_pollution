@@ -5,6 +5,8 @@ from datetime import date, timedelta
 from os import path
 import pandas as pd
 from collections import OrderedDict
+from math import floor
+import math  
 
 import boto3
 import s3fs
@@ -108,3 +110,54 @@ def get_data(UP_LEFT, UP_RIGHT, DOWN_RIGHT, DOWN_LEFT, START_DATE, END_DATE, STA
             raise CustomError("INPUT ERROR: Start Date is greater than End Date")
     except Exception as e:
         print(e)
+
+        
+# Function for getting noaa data nearest to a given lat-lon for a given time
+def getNearestNoaaData(LAT, LON, DATETIMEVAL):
+    
+    # Parse Inputs
+    year = DATETIMEVAL[:4]
+    mthstr = '{0:0>2}'.format(DATETIMEVAL[5:7])
+    daystr = '{0:0>2}'.format(DATETIMEVAL[8:10])
+    hrstr = '{0:0>2}'.format(DATETIMEVAL[11:13])
+    minstr = '{0:0>2}'.format(DATETIMEVAL[14:16])
+    
+    filename = 'asos_' + year + mthstr + daystr
+    folder='AsosDaily'
+    
+    # Get File from s3
+    try:
+        s3 = s3fs.S3FileSystem()
+        myopen = s3.open
+        s3_resource = boto3.resource('s3')
+        s3_resource.Object('midscapstone-whos-polluting-my-air', '{}/{}.parquet'.format(folder, filename)).load()
+        pf=ParquetFile('midscapstone-whos-polluting-my-air/{}/{}.parquet'.format(folder, filename), open_with=myopen)
+        df=pf.to_pandas()
+        df.reset_index(inplace=True, drop=True)
+    except Exception as e:
+        print("Processing {}/{} failed".format(folder, filename))
+        print(e)
+        
+    
+    # Create datetime filter value by rounding the minute to the previous 5-min value
+    datetimefilter=5 * floor(int(year + mthstr + daystr + hrstr + minstr)/5)
+    
+    # Filter dataframe based on the above datetime value and iterate till a match is found
+    while True:
+        filtered_df = df[df.datetime == datetimefilter]
+        if len(filtered_df) > 0:
+            break
+        else:
+            datetimefilter -= 5
+    
+    # Get row corresponding to nearest lat-lon based on euclidean distance
+    lowdist=9999
+    lowindex=-1
+    for index, row in filtered_df.iterrows():
+        dist = math.sqrt((row['lat'] - LAT)**2 + (row['lon'] - LON)**2)
+        if dist < lowdist:
+            lowdist=dist
+            lowindex=index
+    
+    nearest_df = filtered_df.loc[lowindex]
+    return nearest_df
