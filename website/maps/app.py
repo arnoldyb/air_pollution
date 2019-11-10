@@ -1,11 +1,15 @@
 #/usr/bin/env Python3
 
 import sys
+import os
+import re
 
 from flask import Flask, render_template, request, redirect, Response, url_for, jsonify
+from flask_jsglue import JSGlue
 import random, json
 
 app = Flask(__name__)
+JSGlue(app)
 
 @app.route('/')
 def output():
@@ -14,7 +18,7 @@ def output():
 
 @app.route("/update")
 def update():
-    """Find up to 10 places within view."""
+    """Find lat lon for desired number of sensors in the bounding box."""
 
     # ensure parameters are present
     if not request.args.get("sw"):
@@ -34,7 +38,12 @@ def update():
     # explode northeast corner into two variables
     (ne_lat, ne_lng) = [float(s) for s in request.args.get("ne").split(",")]
 
-    print(sw_lat, sw_lng, ne_lat, ne_lng)
+    #dummy calcs. need to replace with actual logic
+    dummylat = (sw_lat + ne_lat)/2
+    dummylng = (sw_lng + ne_lng)/2
+
+    lst=[(dummylat, dummylng)]
+    return jsonify(lst)
 
 if __name__ == '__main__':
     app.run()

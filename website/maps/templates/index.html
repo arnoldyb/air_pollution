@@ -11,6 +11,10 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_ti9X7_c3dsFkON13Q0MKr08aPXVs9pg"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+
+  <!-- http://stewartjpark.com/Flask-JSGlue/ -->
+  {{ JSGlue.include() }}
+
   <!-- <script src="../static/mapscripts.js"></script> -->
   <script src="{{ url_for('static', filename='mapscripts.js') }}"></script>
 </head>
@@ -26,7 +30,7 @@
         <form id="form">
             <div class="form-group">
                 <!-- <label class="sr-only" for="q">Number of Sensors</label> -->
-                <input class="form-control" id="q" placeholder="Number of Sensors" type="text"/>
+                <input class="form-control" id="q" placeholder="Number of Sensors" type="text" value="5"/>
                 <input type="submit" value="Show" />
             </div>
         </form>

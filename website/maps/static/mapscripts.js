@@ -10,17 +10,13 @@ var info = new google.maps.InfoWindow();
 
 // execute when the DOM is fully loaded
 $(function() {
-    console.log("function123");
 
     document.getElementById('form').addEventListener('submit', function(e) {
-      console.log("updateSensors1");
       numSensors = document.getElementById("q").value;
-      console.log("updateSensors", numSensors);
     e.preventDefault();
     }, false);
     // styles for map
     // https://developers.google.com/maps/documentation/javascript/styling
-    console.log("styles");
     var styles = [
 
         // hide Google's labels
@@ -58,13 +54,32 @@ $(function() {
 
 });
 
+/**
+ * Adds marker for place to map.
+ */
+function addMarker(place)
+{
+    // where are we
+    var myloc = new google.maps.LatLng(place[0], place[1]);
+
+    //create markers
+    var marker = new google.maps.Marker({
+        position: myloc,
+        map: map,
+        // label: "V",
+        icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
+    });
+
+    //remember marker for later
+    markers.push(marker);
+    marker.setMap(map);
+}
 
 /**
  * Configures application.
  */
 function configure()
 {
-    console.log("configure");
     // update UI after map has been dragged
     google.maps.event.addListener(map, "dragend", function() {
 
@@ -72,14 +87,12 @@ function configure()
         // http://stackoverflow.com/a/12410385
         if (!info.getMap || !info.getMap())
         {
-            console.log("dragend");
             update();
         }
     });
 
     // update UI after zoom level changes
     google.maps.event.addListener(map, "zoom_changed", function() {
-        console.log("zoom_changed");
         update();
     });
 
@@ -97,7 +110,6 @@ function configure()
     }, true);
 
     // update UI
-    console.log("noevents")
     update();
 
     // give focus to text box
@@ -105,11 +117,23 @@ function configure()
 }
 
 /**
+ * Removes markers from map.
+ */
+function removeMarkers()
+{
+    // delete each marker
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    // reset markers
+    markers = [];
+}
+
+/**
  * Shows info window at marker with content.
  */
 function showInfo(marker, content)
 {
-    console.log("showInfo");
     // start div
     var div = "<div id='info'>";
     if (typeof(content) == "undefined")
@@ -138,21 +162,31 @@ function showInfo(marker, content)
  */
 function update()
 {
-    console.log("update");
     // get map's bounds
     var bounds = map.getBounds();
-    console.log("bounds");
     var ne = bounds.getNorthEast();
     var sw = bounds.getSouthWest();
 
-    console.log("update1");
     // get places within bounds (asynchronously)
     var parameters = {
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
         sw: sw.lat() + "," + sw.lng()
     };
-    console.log("update2");
-    console.log("parms: ", parameters);
     $.getJSON(Flask.url_for("update"), parameters)
+    .done(function(data, textStatus, jqXHR) {
+       // remove old markers from map
+       removeMarkers();
+
+       // add new markers to map
+       for (var i = 0; i < data.length; i++)
+       {
+           addMarker(data[i]);
+       }
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+
+        // log error to browser's console
+        console.log(errorThrown.toString());
+    });
 };
