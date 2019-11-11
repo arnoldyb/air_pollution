@@ -102,11 +102,21 @@ a:active {
     padding-bottom: 0;
 }
 
+.introGrab {
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    padding-bottom: 2%;
+    color: #595959;
+    line-height: 30px;
+    font-size: 24pt;
+}
+
 .introDetails {
     margin: 0 auto;
     width: 80%;
     height: auto;
-    padding-bottom: 5%;
+    padding-bottom: 2%;
     color: #595959;
     line-height: 30px;
     font-size: 14pt;
@@ -211,6 +221,12 @@ a:active {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.teamHeader {
+	text-align: center;
+    color: #595959;
+    font-size: 24pt;
 }
 
 .tMateContainer {
