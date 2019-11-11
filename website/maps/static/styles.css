@@ -31,8 +31,9 @@ html, body, #map-canvas, .container-fluid
     /* block-level flex container */
     display: flex;
 
-    /* center container's content */
-    justify-content: center;
+    /* left position container's content */
+    justify-content: left;
+    padding-left: 20px;
 }
 
 /* stylize text box */
@@ -42,7 +43,8 @@ html, body, #map-canvas, .container-fluid
     background-color: #ffffff !important;
 
     /* text box's width */
-    width: 300px;
+    width: 150px;
+    margin-left: 25px;
 }
 
 /* stylize info window */
@@ -57,4 +59,10 @@ html, body, #map-canvas, .container-fluid
 #info ul
 {
     margin-bottom: 0;
+}
+
+/* Hide submit button */
+#btnsub
+{
+        visibility: hidden;
 }
