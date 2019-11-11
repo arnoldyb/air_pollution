@@ -4,6 +4,7 @@
   <meta charset="utf-8"/>
   <meta content="initial-scale=1, width=device-width" name="viewport"/>
   <title>AirPatrol</title>
+  <link runat="server" rel='icon' href='favicon.ico' type='image/x-icon'/ >
   <script src="https://code.jquery.com/jquery-latest.min.js"></script>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
   <!-- <link href="../static/styles.css" rel="stylesheet"/> -->
@@ -29,9 +30,11 @@
         <!-- http://getbootstrap.com/css/#forms -->
         <form id="form">
             <div class="form-group">
-                <!-- <label class="sr-only" for="q">Number of Sensors</label> -->
-                <input class="form-control" id="q" placeholder="Number of Sensors" type="text" value="5"/>
-                <input type="submit" value="Show" />
+                <label class="sr-only" for="q">Number of Sensors</label>
+                <span>
+                <input class="form-control" id="q" placeholder="Number of Sensors" type="text"/>
+              </span>
+                <input type="submit" id="btnsub" value="Show" />
             </div>
         </form>
     </div>

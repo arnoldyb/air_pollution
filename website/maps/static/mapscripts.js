@@ -12,8 +12,8 @@ var info = new google.maps.InfoWindow();
 $(function() {
 
     document.getElementById('form').addEventListener('submit', function(e) {
-      numSensors = document.getElementById("q").value;
-    e.preventDefault();
+      update();
+      e.preventDefault();
     }, false);
     // styles for map
     // https://developers.google.com/maps/documentation/javascript/styling
