@@ -9,6 +9,8 @@ import ast
 from fastparquet import ParquetFile, write
 import boto3
 import s3fs
+from geopy.distance import distance
+import geopy
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -48,9 +50,20 @@ def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
 
     # Find the closest lat-lon mapping corresponding to the purple air records
     closest_points = {}
-    for name, point in ts_latlon_df.iterrows():
-        distances = (((lkp_latlon_df - point) ** 2).sum(axis=1)**.5)
-        closest_points[name] = distances.sort_values().index[0]
+#     Euclidean distance based calculation
+#     for name, point in ts_latlon_df.iterrows():
+#         distances = (((lkp_latlon_df - point) ** 2).sum(axis=1)**.5)
+#         closest_points[name] = distances.sort_values().index[0]
+        
+#     Geopy based distance calculation
+    for name, opoint in ts_latlon_df.iterrows():
+        origin = geopy.point.Point(opoint)
+        lstDist = []
+        for ind, dpoint in lkp_latlon_df.iterrows():
+            destination = geopy.point.Point(dpoint)
+            distance = geopy.distance.distance(origin, destination).km
+            lstDist.append((ind, distance))
+        closest_points[name] = sorted(lstDist, key=lambda x: x[1])[0][0]
 
     # Create dataframe from lat-lon mapping
     latlonmap_df = pd.DataFrame(list(closest_points.items()), columns=['tslatlonhash',maphashcol])
@@ -81,14 +94,32 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
         ts_latlon_df.drop_duplicates(inplace=True)
         ts_latlon_df.set_index('tslatlonhash', inplace=True)
 
-        # Find the closest asos lat-lon mapping corresponding to the purple air records
-        combined_df = mapLatLon(bay_ts_df, ts_latlon_df, noaa_df, 'asoslatlonhash', 'datetime')
+        try:
+            # Find the closest asos lat-lon mapping corresponding to the purple air records
+            combined_df = mapLatLon(bay_ts_df, ts_latlon_df, noaa_df, 'asoslatlonhash', 'datetime')
 
-        # Find the closest asos lat-lon mapping corresponding to the purple air records
-        combined_df = mapLatLon(combined_df, ts_latlon_df, epa_df, 'epalatlonhash', 'created')
-
-        # Drop unwanted columns
-        combined_df.drop(['tslatlonhash', 'asoslatlonhash', 'epalatlonhash', 'rec_length','num_fields', 'datetime', 'utc', 'parameter'], axis=1, inplace=True)
+            # Find the closest epa lat-lon mapaping corresponding to the purple air records
+            combined_df = mapLatLon(combined_df, ts_latlon_df, epa_df, 'epalatlonhash', 'created')
+            combined_df.drop(['tslatlonhash', 'asoslatlonhash', 'epalatlonhash', 'rec_length','num_fields', 'datetime', 'utc', 'parameter'], axis=1, inplace=True)
+        except Exception as e:
+            print("*** EXCEPTION IN COMBINING NOAA DATA *** {}".format(e))
+            combined_df = mapLatLon(bay_ts_df, ts_latlon_df, epa_df, 'epalatlonhash', 'created')
+            combined_df.drop(['tslatlonhash', 'epalatlonhash', 'utc', 'parameter'], axis=1, inplace=True)
+            combined_df['wban_number'] = None
+            combined_df['call_sign'] = None
+            combined_df['call_sign2'] = None
+            combined_df['interval'] = None
+            combined_df['call_sign3'] = None
+            combined_df['zulu_time'] = None
+            combined_df['report_modifier'] = None
+            combined_df['wind_data'] = False
+            combined_df['wind_direction'] = None
+            combined_df['wind_speed'] = np.nan
+            combined_df['gusts'] = False
+            combined_df['gust_speed'] = np.nan
+            combined_df['variable_winds'] = np.nan
+            combined_df['variable_wind_info'] = None
+            combined_df['sys_maint_reqd'] = False
 
     #     # Write to file
     #     parquet_file = "{0}/combined_interpolated/20{3}{1}{2:02}.parquet".format(datafolder, month, day, yr)
