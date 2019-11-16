@@ -51,18 +51,23 @@ def update():
 
     loc_lst = []
     try:
-        s3 = s3fs.S3FileSystem()
-        myopen = s3.open
-        s3_resource = boto3.resource('s3')
-        s3_resource.Object('midscapstone-whos-polluting-my-air', 'UtilFiles/dummylatlon.parquet').load()
-        pf=ParquetFile('midscapstone-whos-polluting-my-air/UtilFiles/dummylatlon.parquet', open_with=myopen)
-        df=pf.to_pandas()
+        # s3 = s3fs.S3FileSystem()
+        # myopen = s3.open
+        # s3_resource = boto3.resource('s3')
+        # s3_resource.Object('midscapstone-whos-polluting-my-air', 'UtilFiles/dummylatlon.parquet').load()
+        # pf=ParquetFile('midscapstone-whos-polluting-my-air/UtilFiles/dummylatlon.parquet', open_with=myopen)
+        # df=pf.to_pandas()
+        bucket = "midscapstone-whos-polluting-my-air"
+        s3 = boto3.client('s3')
+        obj = s3.get_object(Bucket= bucket, Key= 'UtilFiles/preds.csv')
+        df = pd.read_csv(obj['Body'])
+        df.drop(['xy_'], axis=1, inplace=True)
 
         df[['lat','lon']] = df[['lat','lon']].apply(pd.to_numeric)
 
         df_filtered = df[(df.lat > sw_lat) & (df.lat < ne_lat) & (df.lon > sw_lng) & (df.lon < ne_lng)]
         df_filtered.reset_index(inplace=True, drop=True)
-        df_sorted = df_filtered.sort_values(by='value', ascending=False)
+        df_sorted = df_filtered.sort_values(by='preds', ascending=False)
         top_lat = df_sorted.head(q).lat.tolist()
         top_lon = df_sorted.head(q).lon.tolist()
         loc_lst = list(zip(top_lat, top_lon))
@@ -72,4 +77,3 @@ def update():
 
 if __name__ == '__main__':
     app.run("0.0.0.0", "8083")
-
