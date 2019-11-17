@@ -14,8 +14,8 @@
         <nav id="container">
             <ul class="topBar">
                 <li><a id="home" href="#home">Home</a></li>
-                <li><a href="#background">Background</a></li>
-                <li><a href="#approach">Approach</a></li>
+                <li><a href="#background">About</a></li>
+                <li><a href="#approach">Use Cases</a></li>
                 <li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
                 <li><a href="#team">Team</a></li>
             </ul>
@@ -26,8 +26,9 @@
         <div class="coverImage">
             <div class="overlay">
                 <h1 class="coverTitle">FairAir</h1>
-                <p class="coverCaption">A tool for optimal air pollution sensor placement </p>
-                <button id="coverBtn">Discover More</button>
+                <p class="coverCaption">Filling the gaps in air pollution monitoring</p> 
+				<!--A tool for optimal air pollution sensor placement. All communities deserve air pollution monitoring. -->
+                <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button id="coverBtn">Try Demo</button><a/>
             </div>
 
             <p class="picCredit">Picture Credit: Photo by Ren Ren on Unsplash</p>
@@ -38,33 +39,72 @@
 
 
 
-        <h1 class="introTitle">Background</h1>
-		<h2 class="introGrab">4.2 million people die each year due to outdoor air pollution.</h2>
-        <p class="introDetails">
-            Government sensors are intentionally placed
+        <h1 class="introTitle">The Big Picture</h1>
+		<h2 class="introGrab">4 million people die annually due to outdoor air pollution</h2>
+        <p class="introDetails">We can push back on polluters with better air quality monitoring. The governent 
+			often places its sensors away from pollution sources. With the price of sensors falling, community groups 
+			and residents are starting to buy their own from companies like PurpleAir.com. So far, most sensors wind 
+			up in wealthier neighborhoods that face less pollution. Our tool aims to change this.
+	
+			<!--Government sensors are intentionally placed
 			far away from pollution sources and don't shine light on our most heavily polluted neighborhoods. Low-cost
 			air pollution sensors, such as those manufactured by Purple Air, have a chance to change this. Purple Air
 			sensor count has increased eight-fold in just three years, but sensors tend to be installed in affluent
 			neighborhoods far from polluters, while our	neighbors suffering from the most pollution can least afford
 			to install them. We propose a tool for identifying	optimal sensor placement to extract the maximum
-			potential out of this sensor explosion.
+			potential out of this sensor explosion.-->
 		</p>
 		<p class="introDetails">
-			With an optimal placement tool, activists can install sensors in areas of greatest need, allowing for more accurate
-			pollution estimates throughout a city than through virtual sensing methods alone. We believe that the increase in
-			transparency around air pollution will spur better policy, saving lives and improving the health of our communities.
-			We can save hundreds of thousands of dollars in hardware costs by diverting needless installations in areas already
-			teeming with sensors toward sparser areas where even a few sensors provide much needed information. Finally, we are
+			FairAir predicts which areas on a map face the most air pollution and recommends the best place 
+			to put new sensors.  
+		</p>	
+		<p class="introDetails">	
+			Optimal placement of sensors:
+			<ul>
+			<li>ensures disadvantaged communities have access to air quality data</li>
+			<li>improves air quality models for everyone living in a region</li>
+			<li>saves money from being wasted on redundant sensor installations</li>
+			</ul>
+			<!--With our optimal placement tool, communities can install sensors in areas of greatest need, allowing for more accurate
+			pollution estimates throughout a city. We believe that the increase in transparency around air pollution will spur 
+			better policy, saving lives and improving the health of our communities. 
+			
+			We also can save hundreds of thousands of dollars 
+			in hardware costs by diverting needless installations in areas already teeming with sensors toward sparser areas where even a few sensors provide much needed information. Finally, we are
 			proud that we will disproportionally benefit disadvantaged communities who cannot afford to purchase these sensors
-			and whose pollution problems would otherwise remain invisible and forgotten.
+			and whose pollution problems would otherwise remain invisible and forgotten.-->
         </p>
     </section>
 
     <section id="approach">
-        <h1 class="approachTitle">Approach</h1>
+        <h1 class="approachTitle">Use Cases</h1>
         <div id="approachContainer">
             <div class="approachDivs">
-                <h3>Audience</h3>
+				<h3>Activists</h3>
+                <hr />
+                <p>
+                    Community advocates can use FairAir to help make a case to donors that their community needs sensors. The tool can also help 
+					establish a fair way to place the sensors, focusing them on the areas most likely to be impacted by air pollution. 
+                </p>
+            </div>
+            <div class="approachDivs">
+                <h3>Donors</h3>
+                <hr />
+                <p>
+                    FairAir can help foundations, governments, and others who donate air pollution sensors to identify the communities 
+					most in need of air quality monitoring. We base our recommendations on where we predict air pollution to be the worst 
+					and distance from other sensors. We can include socioeconomic information. 
+                </p>
+            </div>
+            <div class="approachDivs">
+                <h3>Residents</h3>
+                <hr />
+                <p>
+					Live far from a sensor and can't afford one? FairAir offers a free prediction of the air quality in your neighborhood. Our model 
+					uses artificial intelligence and data from air quality sensors and weather stations. No model is perfect, and ours is improved 
+					when communities install more PurpleAir sensors and place them optimally.
+                </p>
+<!--                <h3>Audience</h3>
                 <hr />
                 <p>
                     We have spoken with activists, professors, and EPA specialists, and have gone into the trenches on toxic tours and climate marches.
@@ -87,7 +127,8 @@
                     There are a variety of virtual sensing solutions on the market. They are able to infer to varying degrees of accuracy pollution levels
 					at locations without sensors. This is an important component of the story, but we differentiate ourselves by taking the
 					next step and a comprehensive solution, making recommendations for additional sensors based on a virtual sensing system.
-                </p>
+                </p>-->
+				
             </div>
         </div>
     </section>
@@ -95,18 +136,18 @@
     <section id="demo">
         <h1 class="introTitle">Demo</h1>
         <div class="demoContainer">
-            <p class="demoP">Don't take our word for it; give it a try below.</p>
-            <button class="demoButton">Click Me!</button>
+            <p class="demoP">Try out our San Francisco Bay Area prototype.</p>
+            <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button class="demoButton">Click Me!</button></a>
         </div>
     </section>
 
     <section id="team">
         <h1 class="approachTitle">Team</h1>
-		<h2 class="teamHeader">We are the Air Patrol</h2>
+		<h2 class="teamHeader">We are FairAir</h2>
         <div id="teamContainer">
 
             <div class="tMateContainer">
-                <img src="./website/images/profilePic.jpg" class="teamPics" alt="" />
+                <img src="./website/images/ben.jpg" class="teamPics" alt="" />
                 <div class="picOverlay">
                     <div class="text">Ben Arnoldy</div>
                 </div>
@@ -140,7 +181,7 @@
     </section>
 
     <footer id="footer">
-        <p>A MIDS Capstone Project by Ben, Jake, Sameed, Mark and Angshuman.</p>
+        <p>FairAir is a capstone project by five UC Berkeley data science graduate students.</p>
     </footer>
 
 
