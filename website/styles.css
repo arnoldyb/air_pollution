@@ -14,10 +14,6 @@ a:active {
     text-decoration: underline;
 }
 
-#home {
-    color: #009999
-}
-
 .coverImage {
     background-image: url('images/city1.jpg');
     margin-top: -20px;
@@ -50,7 +46,7 @@ a:active {
     text-align: center;
     color: #eee;
     font-size: 25px;
-    letter-spacing: 3px;
+    letter-spacing: 1px;
 }
 
 #coverBtn {
@@ -60,6 +56,7 @@ a:active {
     padding: 8px 12px;
     margin-bottom: 20px;
     border-radius: 10px;
+    letter-spacing: 1px;
     border: none;
     align-content: center;
 }
@@ -74,7 +71,7 @@ a:active {
 #container {
     width: 100%;
     height: 60px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgb(43, 41, 41);
     position: fixed;
     top: 0;
     z-index: 1;
@@ -99,6 +96,7 @@ a:active {
     color: #009999;
     font-size: 35px;
     padding: 30px;
+    padding-top: 6%;
     padding-bottom: 0;
 }
 
@@ -106,6 +104,7 @@ a:active {
     margin: 0 auto;
     width: 80%;
     height: auto;
+    padding-top: 2%;
     padding-bottom: 2%;
     color: #595959;
     line-height: 30px;
@@ -137,6 +136,7 @@ a:active {
     color: #eee;
     font-size: 35px;
     padding: 30px;
+    padding-top: 6%;
     padding-bottom: 0;
 }
 
@@ -282,14 +282,34 @@ a:active {
 
 #footer {
     width: 100%;
-    height: 10vh;
+    height: 7vh;
     background-color: #404040;
+    margin-top: -11px;
 }
 
 #footer p {
     text-align: center;
     color: white;
-    padding: 22px;
-    font-size: 12pt;
+    padding-top:25px;
+    font-size: 10pt;
     margin: 0px;
+}
+
+/* Map Page Styles */
+.sideHeader {
+    list-style-type: none;
+    margin: 0;
+    margin-top: 60px;
+    padding: 0;
+    width: 20%;
+    background-color: #999999;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+#map {
+    margin-left: 19%;
+    padding: 1px 16px;
+    height: 1000px;
 }
