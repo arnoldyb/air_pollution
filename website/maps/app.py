@@ -43,6 +43,13 @@ def update():
     else:
         q = int(request.args.get("q"))
 
+    # Check if we need to display existing sensors
+    if not request.args.get("toggle"):
+        toggle=False
+    else:
+        toggle = request.args.get("toggle")
+    print("*** TOGGLE ***: {}".format(toggle))
+
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
 
@@ -51,7 +58,6 @@ def update():
 
     loc_lst = []
 
-    # print("**DEBUG PRINT: ",request.args.get("toggle"))
     try:
         # s3 = s3fs.S3FileSystem()
         # myopen = s3.open

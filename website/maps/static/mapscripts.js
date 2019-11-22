@@ -173,7 +173,7 @@ function update()
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
         sw: sw.lat() + "," + sw.lng(),
-        // toggle: $("#toggle").is(":checked").val()
+        toggle: $("#toggle").is(":checked"),
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
