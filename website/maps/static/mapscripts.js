@@ -61,6 +61,7 @@ function addMarker(place)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
+    console.log(place[0], place[1]);
 
     //create markers
     var marker = new google.maps.Marker({
@@ -171,7 +172,8 @@ function update()
     var parameters = {
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
-        sw: sw.lat() + "," + sw.lng()
+        sw: sw.lat() + "," + sw.lng(),
+        // toggle: $("#toggle").is(":checked").val()
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {

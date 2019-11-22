@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="initial-scale=1, width=device-width" name="viewport"/>
-  <title>AirPatrol</title>
+  <title>FairAir</title>
   <link runat="server" rel='icon' href='favicon.ico' type='image/x-icon'/ >
   <script src="https://code.jquery.com/jquery-latest.min.js"></script>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
@@ -20,30 +20,45 @@
   <script src="{{ url_for('static', filename='mapscripts.js') }}"></script>
 </head>
 <body>
+    <header>
+        <nav id="container">
+            <ul class="topBar">
+                <li><a id="home" href="https://fairair.netlify.com/#home">Home</a></li>
+                <li><a href="https://fairair.netlify.com/#background">About</a></li>
+                <li><a href="https://fairair.netlify.com/#approach">Use Cases</a></li>
+                <li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
+                <li><a href="https://fairair.netlify.com/#team">Team</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="sideHeader">
 
-    <!-- fill viewport -->
-    <div class="container-fluid">
-
-        <!-- https://developers.google.com/maps/documentation/javascript/tutorial -->
-        <div id="map-canvas"></div>
-
-        <!-- http://getbootstrap.com/css/#forms -->
-        <form id="form">
-            <div class="form-group">
-                <label class="sr-only" for="q">Number of Sensors</label>
-                <span>
-                <input class="form-control" id="q" placeholder="Number of Sensors" type="text"/>
-              </span>
-                <input type="submit" id="btnsub" value="Show" />
-            </div>
-            <p style = "margin-left:20px;">
+        <p id="mapinstr">
             <b> Instructions: </b> <br>
             <b> 1) Enter number of sensors to place </b> <br>
             <b> 2) Pan and zoom to neighborhood of interest </b> <br>
             <b> 3) Optimal sensor locations will be displayed. </b> <br>
-            </p>
+        </p>
+        <!-- http://getbootstrap.com/css/#forms -->
+        <form id="form">
+            <div class="form-group">
+              <div id="spinner">
+                <label for="q">Number of Sensors:</label>
+                <input class="form-control" id="q" type="number" name="quantity" min="1" max="50" value="5">
+              </div>
+                <!-- <div><input type="checkbox" name="showPA" value="showPA"> Show existing sensors</div> -->
+                <div class="btnsub"><input type="submit" id="btnsub" value="Update" /></div>
+
+            </div>
         </form>
     </div>
-
+    <!-- fill viewport -->
+    <div class="container-fluid">
+        <!-- https://developers.google.com/maps/documentation/javascript/tutorial -->
+        <div id="map-canvas"></div>
+    </div>
+    <footer id="footer">
+        <p>FairAir is a capstone project by five UC Berkeley data science graduate students.</p>
+    </footer>
 </body>
 </html>
