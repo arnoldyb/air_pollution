@@ -38,6 +38,13 @@ def output():
         except botocore.exceptions.ClientError:
             file_date = file_date - timedelta(days=1)
 
+    # load polluters
+    bucket = "midscapstone-whos-polluting-my-air"
+    s3 = boto3.client('s3')
+    obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
+    global polluter_df
+    polluter_df = pd.read_csv(obj['Body'])
+
     # serve index template
     return render_template('index.html')
 
@@ -65,22 +72,36 @@ def update():
         q = int(request.args.get("q"))
 
     # Check if we need to display existing sensors
-    toggle = request.args.get("toggle")
-    if toggle == 'false':
-        toggle = False
-    elif toggle == 'true':
-        toggle = True
+    toggle_existing = request.args.get("toggle_existing")
+    if toggle_existing == 'false':
+        toggle_existing = False
+    elif toggle_existing == 'true':
+        toggle_existing = True
     else:
-        print("Error in toggle")
-        print(toggle)
-    print("*** TOGGLE ***: {}".format(toggle))
+        print("Error in toggle_existing", toggle_existing)
 
-    if toggle:
+    # Check if we need to display polluters
+    toggle_polluters = request.args.get("toggle_polluters")
+    if toggle_polluters == 'false':
+        toggle_polluters = False
+    elif toggle_polluters == 'true':
+        toggle_polluters = True
+    else:
+        print("Error in toggle_polluters", toggle_polluters)
+
+    if toggle_existing:
         existing_lat = unique_sensor_df.lat.tolist()
         existing_lon = unique_sensor_df.lon.tolist()
         existing_lst = list(zip(existing_lat, existing_lon))
     else:
         existing_lst = []
+
+    if toggle_polluters:
+        polluter_lat = polluter_df.Lat.tolist()
+        polluter_lon = polluter_df.Lon.tolist()
+        polluter_lst = list(zip(polluter_lat, polluter_lon))
+    else:
+        polluter_lst = []
 
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
@@ -91,12 +112,6 @@ def update():
     loc_lst = []
 
     try:
-        # s3 = s3fs.S3FileSystem()
-        # myopen = s3.open
-        # s3_resource = boto3.resource('s3')
-        # s3_resource.Object('midscapstone-whos-polluting-my-air', 'UtilFiles/dummylatlon.parquet').load()
-        # pf=ParquetFile('midscapstone-whos-polluting-my-air/UtilFiles/dummylatlon.parquet', open_with=myopen)
-        # df=pf.to_pandas()
         bucket = "midscapstone-whos-polluting-my-air"
         s3 = boto3.client('s3')
         obj = s3.get_object(Bucket= bucket, Key= 'UtilFiles/preds.csv')
@@ -114,12 +129,13 @@ def update():
         print("*** LOCATION ***: {}".format(loc_lst))
     except Exception as e:
         print("*** EXCEPTION IN GET ADDRESS: {}".format(e))
-    # return jsonify(loc_lst)
-    json = {
+
+    location_json = {
         "recommendations": loc_lst,
-        "existing": existing_lst
+        "existing": existing_lst,
+        "polluters": polluter_lst
     }
-    return jsonify(json)
+    return jsonify(location_json)
 
 if __name__ == '__main__':
     app.run("0.0.0.0", "8083")
