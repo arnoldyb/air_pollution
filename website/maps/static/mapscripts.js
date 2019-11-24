@@ -36,7 +36,7 @@ $(function() {
         center: {lat: 37.773972, lng: -122.431297}, // Washington, DC
         disableDefaultUI: true,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        maxZoom: 14,
+        maxZoom: 16,
         panControl: true,
         styles: styles,
         zoom: 13,
@@ -57,18 +57,24 @@ $(function() {
 /**
  * Adds marker for place to map.
  */
-function addMarker(place)
+function addMarker(place, type)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
     console.log(place[0], place[1]);
-
+    if (type == "recommendation") {
+        icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png"
+    }
+    if (type == "existing") {
+        icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png"
+    }
     //create markers
     var marker = new google.maps.Marker({
         position: myloc,
         map: map,
         // label: "V",
-        icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
+//            icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
+        icon: icon_path
     });
 
     //remember marker for later
@@ -173,17 +179,24 @@ function update()
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
         sw: sw.lat() + "," + sw.lng(),
-        // toggle: $("#toggle").is(":checked").val()
+        toggle: $("#toggle").is(":checked"),
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
+
        // remove old markers from map
        removeMarkers();
 
-       // add new markers to map
-       for (var i = 0; i < data.length; i++)
+       // add new recommendations to map
+       for (var i = 0; i < data.recommendations.length; i++)
        {
-           addMarker(data[i]);
+           addMarker(data.recommendations[i], "recommendation");
+       }
+
+        // add existing sensor network to map (if toggled on)
+       for (var i = 0; i < data.existing.length; i++)
+       {
+           addMarker(data.existing[i], "existing");
        }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {

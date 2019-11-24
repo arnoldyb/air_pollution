@@ -6,7 +6,9 @@ import re
 import pandas as pd
 import s3fs
 import boto3
+import botocore
 import random, json
+from datetime import datetime, timedelta
 from fastparquet import ParquetFile
 
 from flask import Flask, render_template, request, redirect, Response, url_for, jsonify
@@ -17,8 +19,27 @@ JSGlue(app)
 
 @app.route('/')
 def output():
-        # serve index template
-        return render_template('index.html')
+    # get latest existing sensor network from S3
+    # try today's date first, then iteratively look backward day by day
+    file_date = datetime.today()
+    while True:
+        try:
+            filename = file_date.strftime('%Y%m%d') + ".parquet"
+            print("trying to load " + filename)
+            s3 = s3fs.S3FileSystem()
+            myopen = s3.open
+            s3_resource = boto3.resource('s3')
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}'.format(filename)).load()
+            pf = ParquetFile('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}'.format(filename), open_with=myopen)
+            df = pf.to_pandas()
+            global unique_sensor_df
+            unique_sensor_df = df.drop_duplicates(subset="sensor_id")
+            break
+        except botocore.exceptions.ClientError:
+            file_date = file_date - timedelta(days=1)
+
+    # serve index template
+    return render_template('index.html')
 
 @app.route("/update")
 def update():
@@ -43,6 +64,24 @@ def update():
     else:
         q = int(request.args.get("q"))
 
+    # Check if we need to display existing sensors
+    toggle = request.args.get("toggle")
+    if toggle == 'false':
+        toggle = False
+    elif toggle == 'true':
+        toggle = True
+    else:
+        print("Error in toggle")
+        print(toggle)
+    print("*** TOGGLE ***: {}".format(toggle))
+
+    if toggle:
+        existing_lat = unique_sensor_df.lat.tolist()
+        existing_lon = unique_sensor_df.lon.tolist()
+        existing_lst = list(zip(existing_lat, existing_lon))
+    else:
+        existing_lst = []
+
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
 
@@ -51,7 +90,6 @@ def update():
 
     loc_lst = []
 
-    # print("**DEBUG PRINT: ",request.args.get("toggle"))
     try:
         # s3 = s3fs.S3FileSystem()
         # myopen = s3.open
@@ -76,7 +114,12 @@ def update():
         print("*** LOCATION ***: {}".format(loc_lst))
     except Exception as e:
         print("*** EXCEPTION IN GET ADDRESS: {}".format(e))
-    return jsonify(loc_lst)
+    # return jsonify(loc_lst)
+    json = {
+        "recommendations": loc_lst,
+        "existing": existing_lst
+    }
+    return jsonify(json)
 
 if __name__ == '__main__':
     app.run("0.0.0.0", "8083")
