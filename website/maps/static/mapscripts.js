@@ -33,7 +33,7 @@ $(function() {
     // options for map
     // https://developers.google.com/maps/documentation/javascript/reference#MapOptions
     var options = {
-        center: {lat: 37.773972, lng: -122.431297}, // Washington, DC
+        center: {lat: 37.773972, lng: -122.431297},
         disableDefaultUI: true,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         maxZoom: 16,
@@ -67,6 +67,9 @@ function addMarker(place, type)
     }
     if (type == "existing") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png"
+    }
+    if (type == "polluter") {
+        icon_path = "http://maps.google.com/mapfiles/kml/shapes/caution.png"
     }
     //create markers
     var marker = new google.maps.Marker({
@@ -179,7 +182,9 @@ function update()
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
         sw: sw.lat() + "," + sw.lng(),
-        toggle: $("#toggle").is(":checked"),
+        toggle_existing: $("#toggle_existing").is(":checked"),
+        toggle_polluters: $("#toggle_polluters").is(":checked"),
+
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
@@ -197,6 +202,12 @@ function update()
        for (var i = 0; i < data.existing.length; i++)
        {
            addMarker(data.existing[i], "existing");
+       }
+
+       // add polluters to map (if toggled on)
+       for (var i = 0; i < data.polluters.length; i++)
+       {
+           addMarker(data.polluters[i], "polluter");
        }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
