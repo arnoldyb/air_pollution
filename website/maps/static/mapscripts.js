@@ -7,6 +7,8 @@ var markers = [];
 // info window
 var info = new google.maps.InfoWindow();
 
+// marker counter
+mCount = 0;
 
 // execute when the DOM is fully loaded
 $(function() {
@@ -61,6 +63,8 @@ function addMarker(place, type)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
+    mCount += 1;
+    console.log("Count2", mCount);
     console.log(place[0], place[1]);
     if (type == "recommendation") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
@@ -72,7 +76,8 @@ function addMarker(place, type)
             '<p><b>Longitude: </b>' + place[1] + '</p>'+
             '</div>'+
             '</div>',
-        titleString = place[0] + "," + place[1]
+        titleString = "Sensor " + mCount.toString(),
+        labelString = mCount.toString()
     }
     if (type == "existing") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png",
@@ -85,7 +90,8 @@ function addMarker(place, type)
             '<p><b>Longitude: </b>' + place[1] + '</p>'+
             '</div>'+
             '</div>',
-        titleString = place[2]
+        titleString = place[2],
+        labelString = " "
     }
     if (type == "polluter") {
         icon_path = "http://maps.google.com/mapfiles/kml/shapes/caution.png",
@@ -101,7 +107,8 @@ function addMarker(place, type)
             '<p><b>Longitude: </b>' + place[1] + '</p>'+
             '</div>'+
             '</div>',
-        titleString = place[2]
+        titleString = place[2],
+        labelString = " "
     }
 
     // Info for clicks
@@ -112,15 +119,22 @@ function addMarker(place, type)
     //create markers
     var icon = {
         url: icon_path,
-        scaledSize: new google.maps.Size(37, 37)
+        scaledSize: new google.maps.Size(37, 37),
+        labelOrigin: new google.maps.Point(19, 10)
     };
 
     var marker = new google.maps.Marker({
         position: myloc,
         map: map,
-        // label: "V",
+        // label: mCount.toString(),
 //            icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
         icon: icon,
+        label: {
+                  text: labelString,
+                  // color: "#eb3a44",
+                  // fontSize: "16px",
+                  fontWeight: "bold"
+                },
         title: titleString
     });
     marker.addListener('click', function() {
@@ -219,6 +233,9 @@ function showInfo(marker, content)
  */
 function update()
 {
+    // reset counter
+    mCount = 0;
+    console.log("Count", mCount);
     // get map's bounds
     var bounds = map.getBounds();
     var ne = bounds.getNorthEast();
