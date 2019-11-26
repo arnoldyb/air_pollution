@@ -63,21 +63,68 @@ function addMarker(place, type)
     var myloc = new google.maps.LatLng(place[0], place[1]);
     console.log(place[0], place[1]);
     if (type == "recommendation") {
-        icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png"
+        icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
+        contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>Latitude: </b>' + place[0] + '</p>'+
+            '<p><b>Longitude: </b>' + place[1] + '</p>'+
+            '</div>'+
+            '</div>',
+        titleString = place[0] + "," + place[1]
     }
     if (type == "existing") {
-        icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png"
+        icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png",
+        contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>Sensor: </b>' + place[2] + '</p>'+
+            '<p><b>Latitude: </b>' + place[0] + '</p>'+
+            '<p><b>Longitude: </b>' + place[1] + '</p>'+
+            '</div>'+
+            '</div>',
+        titleString = place[2]
     }
     if (type == "polluter") {
-        icon_path = "http://maps.google.com/mapfiles/kml/shapes/caution.png"
+        icon_path = "http://maps.google.com/mapfiles/kml/shapes/caution.png",
+        contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>Name: </b>' + place[2] + '</p>'+
+            '<p><b>Street: </b>' + place[3] + '</p>'+
+            '<p><b>City: </b>' + place[4] + '</p>'+
+            '<p><b>PM: </b>' + place[5] + '</p>'+
+            '<p><b>Latitude: </b>' + place[0] + '</p>'+
+            '<p><b>Longitude: </b>' + place[1] + '</p>'+
+            '</div>'+
+            '</div>',
+        titleString = place[2]
     }
+
+    // Info for clicks
+    var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
     //create markers
+    var icon = {
+        url: icon_path,
+        scaledSize: new google.maps.Size(37, 37)
+    };
+
     var marker = new google.maps.Marker({
         position: myloc,
         map: map,
         // label: "V",
 //            icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
-        icon: icon_path
+        icon: icon,
+        title: titleString
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
     });
 
     //remember marker for later
