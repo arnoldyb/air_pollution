@@ -24,14 +24,15 @@ def output():
     file_date = datetime.today()
     while True:
         try:
-            filename = file_date.strftime('%Y%m%d') + ".parquet"
-            print("trying to load " + filename)
-            s3 = s3fs.S3FileSystem()
-            myopen = s3.open
-            s3_resource = boto3.resource('s3')
-            s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}'.format(filename)).load()
-            pf = ParquetFile('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}'.format(filename), open_with=myopen)
-            df = pf.to_pandas()
+            # filename = file_date.strftime('%Y%m%d') + ".parquet"
+            # print("trying to load " + filename)
+            # s3 = s3fs.S3FileSystem()
+            # myopen = s3.open
+            # s3_resource = boto3.resource('s3')
+            # s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}'.format(filename)).load()
+            # pf = ParquetFile('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}'.format(filename), open_with=myopen)
+            # df = pf.to_pandas()
+            df = pd.read_parquet("./pasensors.parquet")
             global unique_sensor_df
             unique_sensor_df = df.drop_duplicates(subset="sensor_id")
             break
@@ -39,11 +40,12 @@ def output():
             file_date = file_date - timedelta(days=1)
 
     # load polluters
-    bucket = "midscapstone-whos-polluting-my-air"
-    s3 = boto3.client('s3')
-    obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
+    # bucket = "midscapstone-whos-polluting-my-air"
+    # s3 = boto3.client('s3')
+    # obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
     global polluter_df
-    polluter_df = pd.read_csv(obj['Body'])
+    # polluter_df = pd.read_csv(obj['Body'])
+    polluter_df = pd.read_csv("./polluters.csv")
 
     # serve index template
     return render_template('index.html')
@@ -92,14 +94,19 @@ def update():
     if toggle_existing:
         existing_lat = unique_sensor_df.lat.tolist()
         existing_lon = unique_sensor_df.lon.tolist()
-        existing_lst = list(zip(existing_lat, existing_lon))
+        existing_name = unique_sensor_df.sensor_name.tolist()
+        existing_lst = list(zip(existing_lat, existing_lon, existing_name))
     else:
         existing_lst = []
 
     if toggle_polluters:
         polluter_lat = polluter_df.Lat.tolist()
         polluter_lon = polluter_df.Lon.tolist()
-        polluter_lst = list(zip(polluter_lat, polluter_lon))
+        polluter_name = polluter_df.Name.tolist()
+        polluter_street = polluter_df.Street.tolist()
+        polluter_city = polluter_df.City.tolist()
+        polluter_pm = polluter_df.PM.tolist()
+        polluter_lst = list(zip(polluter_lat, polluter_lon, polluter_name, polluter_street, polluter_city, polluter_pm))
     else:
         polluter_lst = []
 
