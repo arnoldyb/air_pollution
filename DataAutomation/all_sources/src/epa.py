@@ -23,7 +23,7 @@ class CustomError(Exception):
 
 
 # Get epa data
-def getEPAHistData():
+def getEPAHistData(month, yr):
 #     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
 
 #     epa_df = pd.read_csv("{}/ambient/historical_PM25.csv".format(datafolder))
@@ -37,8 +37,8 @@ def getEPAHistData():
             s3 = s3fs.S3FileSystem()
             myopen = s3.open
             s3_resource = boto3.resource('s3')
-            s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaRaw/epa_201910.parquet').load()
-            pf=ParquetFile('midscapstone-whos-polluting-my-air/EpaRaw/epa_201910.parquet', open_with=myopen)
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaRaw/epa_20{}{}.parquet'.format(yr, month)).load()
+            pf=ParquetFile('midscapstone-whos-polluting-my-air/EpaRaw/epa_20{}{}.parquet'.format(yr, month), open_with=myopen)
             epa_df=pf.to_pandas()
         except:
             raise CustomError("FILE ERROR: Epa Raw Dataframe not found")

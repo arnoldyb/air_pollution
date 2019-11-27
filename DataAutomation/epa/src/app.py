@@ -38,10 +38,10 @@ def get_AQI(start_time = None, end_time = None):
     print("*** START TIME : {} ***".format(start_time))
     print("*** END TIME : {} ***".format(end_time))
 
-    MIN_LAT = 37.701933
-    MAX_LAT = 38.008050
-    MIN_LON = -122.536985
-    MAX_LON = -122.186437
+    MIN_LAT = 37.2781261
+    MAX_LAT = 38.063446
+    MIN_LON = -122.683496
+    MAX_LON = -121.814281
 
     EPA_URL = "http://www.airnowapi.org/aq/data/"
     params = {"startDate":start_time,

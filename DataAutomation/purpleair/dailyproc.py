@@ -75,13 +75,18 @@ def getDailyData(s3open, s3Objs, startInd, endInd, year):
 
 def main():
     # Get Inputs
-    year = '2019'
-    month = '10'
-    day = '1'
-    numdays = 31
+    # year = '2019'
+    # month = '10'
+    # stday = '22'
+    numdays = 1
+    # Get year, month and day in Pacific timezone
+    prevday = datetime.datetime.now()-datetime.timedelta(1)
+    month = prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%m")
+    stday = int(prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%d"))
+    year = prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%Y")
 
     for i in range(int(numdays)):
-        day = int(day) + i
+        day = int(stday) + i
         daystr = "{:0>2}".format(day)
         print("*** PROCESSING DAY: {} ***".format(day))
         startInd = int(month + daystr + '0659')
@@ -98,51 +103,58 @@ def main():
         purple_df = getDailyData(myopen, s3Objs, startInd, endInd, year)
 
         print("*** RENAME COLUMNS ***")
-        purple_df.rename(columns={'AGE':'age', 'A_H':'a_h', 'DEVICE_LOCATIONTYPE':'device_loc_typ', 'Flag':'high_reading_flag', 'Hidden':'hidden', 'ID':'sensor_id', 'Label':'sensor_name',
-                              'LastSeen':'last_seen', 'Lat':'lat', 'Lon':'lon', 'PM2_5Value':'pm2_5val', 'ParentID':'parent_id', 'THINGSPEAK_PRIMARY_ID':'thingspeak_primary_id',
-                              'THINGSPEAK_PRIMARY_ID_READ_KEY':'thingspeak_primary_id_read_key', 'THINGSPEAK_SECONDARY_ID':'thingspeak_secondary_id',
-                              'THINGSPEAK_SECONDARY_ID_READ_KEY':'thingspeak_secondary_id_read_key', 'Type':'sensor_type', 'humidity':'humidity', 'isOwner':'is_owner', 'pressure':'pressure',
-                              'temp_f':'temp_f', 'lastModified':'av_stat_last_modified', 'timeSinceModified':'av_stat_time_since_last_modified', 'v1':'pm2_5val_10m_avg', 'v2':'pm2_5val_30m_avg',
-                              'v3':'pm2_5val_1h_avg', 'v4':'pm2_5val_6h_avg', 'v5':'pm2_5val_24h_avg', 'v6':'pm2_5val_1wk_avg'}, inplace=True)
+        try:
+            purple_df.rename(columns={'AGE':'age', 'A_H':'a_h', 'DEVICE_LOCATIONTYPE':'device_loc_typ', 'Flag':'high_reading_flag', 'Hidden':'hidden', 'ID':'sensor_id', 'Label':'sensor_name',
+                                  'LastSeen':'last_seen', 'Lat':'lat', 'Lon':'lon', 'PM2_5Value':'pm2_5val', 'ParentID':'parent_id', 'THINGSPEAK_PRIMARY_ID':'thingspeak_primary_id',
+                                  'THINGSPEAK_PRIMARY_ID_READ_KEY':'thingspeak_primary_id_read_key', 'THINGSPEAK_SECONDARY_ID':'thingspeak_secondary_id',
+                                  'THINGSPEAK_SECONDARY_ID_READ_KEY':'thingspeak_secondary_id_read_key', 'Type':'sensor_type', 'humidity':'humidity', 'isOwner':'is_owner', 'pressure':'pressure',
+                                  'temp_f':'temp_f', 'lastModified':'av_stat_last_modified', 'timeSinceModified':'av_stat_time_since_last_modified', 'v1':'pm2_5val_10m_avg', 'v2':'pm2_5val_30m_avg',
+                                  'v3':'pm2_5val_1h_avg', 'v4':'pm2_5val_6h_avg', 'v5':'pm2_5val_24h_avg', 'v6':'pm2_5val_1wk_avg'}, inplace=True)
 
-        # Drop unwanted columns
-        purple_df.drop(['age','av_stat_last_modified', 'av_stat_time_since_last_modified','pm2_5val_10m_avg', 'pm2_5val_30m_avg', 'pm2_5val_1h_avg',
-               'pm2_5val_6h_avg', 'pm2_5val_24h_avg', 'pm2_5val_1wk_avg', 'pm2_5val','humidity','pressure','temp_f','sensor_type'], axis=1, inplace=True)
-        # There may be duplicates in sensor data in case no new readings we obtained since the last refresh
-        purple_df.drop_duplicates(inplace=True)
+            # Drop unwanted columns
+            purple_df.drop(['age','av_stat_last_modified', 'av_stat_time_since_last_modified','pm2_5val_10m_avg', 'pm2_5val_30m_avg', 'pm2_5val_1h_avg',
+                   'pm2_5val_6h_avg', 'pm2_5val_24h_avg', 'pm2_5val_1wk_avg', 'pm2_5val','humidity','pressure','temp_f','sensor_type'], axis=1, inplace=True)
+            # There may be duplicates in sensor data in case no new readings we obtained since the last refresh
+            purple_df.drop_duplicates(inplace=True)
 
-        bayarea_purple_df = purple_df[(purple_df.lat > 37.701933) & (purple_df.lat < 38.008050)
-                                  & (purple_df.lon > -122.536985) & (purple_df.lon < -122.186437)]
-        bayarea_purple_df.reset_index(inplace=True, drop=True)
+            bayarea_purple_df = purple_df[(purple_df.lat > 37.701933) & (purple_df.lat < 38.008050)
+                                      & (purple_df.lon > -122.536985) & (purple_df.lon < -122.186437)]
+            bayarea_purple_df.reset_index(inplace=True, drop=True)
 
-        # Get date and time columns in local timezone
-        bayarea_purple_df['year'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%Y"))
-        bayarea_purple_df['month'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%m"))
-        bayarea_purple_df['day'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%d"))
-        bayarea_purple_df['hour'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%H"))
-        bayarea_purple_df['minute'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%M"))
-        bayarea_purple_df['10min'] = bayarea_purple_df['minute'].apply(lambda x: "{:02}".format(10 * floor(int(x)/10)))
+            # Get date and time columns in local timezone
+            bayarea_purple_df['year'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%Y"))
+            bayarea_purple_df['month'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%m"))
+            bayarea_purple_df['day'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%d"))
+            bayarea_purple_df['hour'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%H"))
+            bayarea_purple_df['minute'] = bayarea_purple_df['last_seen'].apply(lambda x: datetime.datetime.fromtimestamp(x).replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%M"))
+            bayarea_purple_df['10min'] = bayarea_purple_df['minute'].apply(lambda x: "{:02}".format(10 * floor(int(x)/10)))
 
-        bayarea_purple_df['datetime'] = bayarea_purple_df[['year', 'month','day','hour','10min']].apply(lambda x: int(''.join(x)), axis=1)
+            bayarea_purple_df['datetime'] = bayarea_purple_df[['year', 'month','day','hour','10min']].apply(lambda x: int(''.join(x)), axis=1)
 
-        # Drop unwanted columns from purple air data
-        bayarea_purple_df.drop(['last_seen', 'hour', 'minute', '10min'], axis = 1, inplace=True)
-        bayarea_purple_df.drop_duplicates(inplace=True)
+            # Drop unwanted columns from purple air data
+            bayarea_purple_df.drop(['last_seen', 'hour', 'minute', '10min'], axis = 1, inplace=True)
+            bayarea_purple_df.drop_duplicates(inplace=True)
 
-        bayarea_purple_dly_df =bayarea_purple_df[(bayarea_purple_df.year == str(year)) & (bayarea_purple_df.month == str(month)) & (bayarea_purple_df.day == str(daystr))]
+            bayarea_purple_dly_df =bayarea_purple_df[(bayarea_purple_df.year == str(year)) & (bayarea_purple_df.month == str(month)) & (bayarea_purple_df.day == str(daystr))]
 
-        # Drop unwanted columns from purple air data
-        bayarea_purple_dly_df.drop(['year', 'month', 'day'], axis = 1, inplace=True)
-        bayarea_purple_dly_df.drop_duplicates(inplace=True)
+            # Drop unwanted columns from purple air data
+            bayarea_purple_dly_df.drop(['year', 'month', 'day'], axis = 1, inplace=True)
+            bayarea_purple_dly_df.drop_duplicates(inplace=True)
 
-        # Add hash column based on the primary and secondary keys
-        bayarea_purple_dly_df['sensorhash'] = bayarea_purple_dly_df.apply (lambda row: createHashKey(row,'thingspeak_primary_id_read_key',
-                                                                                                    'thingspeak_secondary_id_read_key'), axis=1)
-        # save
-        print("*** WRITE TO S3 ***")
-        write('midscapstone-whos-polluting-my-air/PurpleAirRaw/{}{}{:02}.parquet'.format(year, month, day), bayarea_purple_dly_df, open_with=myopen)
-        print("*** MAKE FILE PUBLIC ***")
-        s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirRaw/{}{}{:02}.parquet'.format(year, month, day)).Acl().put(ACL='public-read')
+            # Add hash column based on the primary and secondary keys
+            bayarea_purple_dly_df['sensorhash'] = bayarea_purple_dly_df.apply (lambda row: createHashKey(row,'thingspeak_primary_id_read_key',
+                                                                                                        'thingspeak_secondary_id_read_key'), axis=1)
+            # save
+            print("*** WRITE TO S3 ***")
+            write('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day), bayarea_purple_dly_df, open_with=myopen)
+            print("*** MAKE FILE PUBLIC ***")
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day)).Acl().put(ACL='public-read')
+
+            print("*** WRITE TO LOCAL DIR ***")
+            parquet_file = "/home/ec2-user/maps/pasensors.parquet"
+            write(parquet_file, bayarea_purple_dly_df,compression='GZIP')
+        except Exception as e:
+            print("*** ERROR PROCESSING DAY {}: {} ***".format(day, e))
 
 if __name__ == "__main__":
 	main()

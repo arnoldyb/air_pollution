@@ -11,6 +11,7 @@ import boto3
 import s3fs
 from geopy.distance import distance
 import geopy
+from getData import get_data
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -54,7 +55,7 @@ def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
 #     for name, point in ts_latlon_df.iterrows():
 #         distances = (((lkp_latlon_df - point) ** 2).sum(axis=1)**.5)
 #         closest_points[name] = distances.sort_values().index[0]
-        
+
 #     Geopy based distance calculation
     for name, opoint in ts_latlon_df.iterrows():
         origin = geopy.point.Point(opoint)

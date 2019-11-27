@@ -155,7 +155,7 @@ def getNOAAData(month, yr):
     #                 lines.append(line.iloc[0,0])
         for station in station_list:
             try:
-                file_name = "AsosRaw/64010{0}20{2}{1}".format(station, '10', '19')
+                file_name = "AsosRaw/64010{0}20{2}{1}".format(station, month, yr)
                 obj = s3.get_object(Bucket= bucket, Key= file_name)
                 df = pd.read_csv(obj['Body'], header=None)
                 df.columns = ['dataval']

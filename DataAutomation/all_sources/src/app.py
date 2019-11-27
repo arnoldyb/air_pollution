@@ -2,6 +2,9 @@
 
 import pandas as pd
 import os
+import datetime, time
+from dateutil import tz
+from pytz import timezone
 import boto3
 import s3fs
 import purpleAir
@@ -47,11 +50,17 @@ def getAddress():
 def handler(event, context):
 # def loadHistory(month, startindex, endindex, dateint, yr):
     # Get Inputs
-    month = os.environ['MTH']
-    startindex = int(os.environ['STINDX'])
-    endindex = int(os.environ['ENDINDX'])
-    dateint = int(os.environ['DATEINT'])
-    yr = os.environ['YR']
+    # month = os.environ['MTH']
+    # startindex = int(os.environ['STINDX'])
+    # endindex = int(os.environ['ENDINDX'])
+    # dateint = int(os.environ['DATEINT'])
+    # yr = os.environ['YR']
+    prevday = datetime.datetime.now()-datetime.timedelta(1)
+    month = prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%m")
+    startindex = int(prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%d"))
+    endindex = startindex + 1
+    dateint = int(prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%Y%m")) * 1000000
+    yr = prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%y")
 
     # Get address dataframe
     print("*** GET ADDRESS ***")
@@ -63,7 +72,7 @@ def handler(event, context):
 
     # Get historical epa data
     print("*** GET EPA HIST DATA ***")
-    epa_df = epa.getEPAHistData()
+    epa_df = epa.getEPAHistData(month, yr)
 
     for i in range(startindex, endindex):
         try:
@@ -89,6 +98,10 @@ def handler(event, context):
 
             # Combine data and save to file
             print("*** COMBINE DATA ***")
+            commonAirPollUtils.combineData(dly_noaa_df, int_epa_df, bay_ts_df, month, i, yr)
+
+            # Add to monthly folder
+            print("*** MONTHLY DATA ***")
             commonAirPollUtils.combineData(dly_noaa_df, int_epa_df, bay_ts_df, month, i, yr)
         except Exception as e:
             print("Error processing data for {}/{}: \n{}".format(month, startindex, e))
