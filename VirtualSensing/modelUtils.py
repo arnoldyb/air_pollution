@@ -166,3 +166,72 @@ def get_noaa_by_date(start_date, end_date, hourly = True, id_field = "call_sign"
     
     return lookup
 
+
+def nearest_epa(line, static_lookup, epa_lookup):
+    
+    ## will need to pass in static lookup/epa_lookup
+    nearest_epa_station = format_name(static_lookup.loc[f"{line.xy_[0]}_{line.xy_[1]}", 'closest_epa'])
+    if f"{line.ts_}_{nearest_epa_station}" in epa_lookup:
+        return epa_lookup[f"{line.ts_}_{nearest_epa_station}"]
+    else:
+        return np.nan
+
+def nearest_humid_temp(line, static_lookup, humid_temp_lookup):
+    NN_list = static_lookup['NN_list'][f"{line.xy_[0]}_{line.xy_[1]}"]
+    
+    for NN in NN_list:
+        if str(NN) in humid_temp_lookup[line.ts_]:
+            humidity = humid_temp_lookup[line.ts_][str(NN)]['humidity']
+            temperature = humid_temp_lookup[line.ts_][str(NN)]['temperature']
+            break
+    else:
+        humidity = np.nan
+        temperature = np.nan
+    
+    return humidity, temperature
+
+
+def fill_in_avgs(line, val, source_df):
+    if np.isnan(line[val]):
+        return source_df.loc[line.ts_, val]
+    else:
+        return line[val]
+    
+    
+def get_wind(line, static_lookup_dict, noaa_lookup):
+    nearest_noaa = static_lookup_dict['closest_NOAA'][f"{line.xy_[0]}_{line.xy_[1]}"]
+    
+    if len(noaa_lookup[f"{line.ts_}_{nearest_noaa.lower()}"]) != 2:
+        return np.nan, np.nan
+    
+    return noaa_lookup[f"{line.ts_}_{nearest_noaa.lower()}"]
+
+def get_neighbors_space_time(line, neighbor_lookup):
+    """
+    Inputs: single observation, a dict of form {timestamp_x_y:[PA values]}
+    Outputs: vector of length 24 corresponding to surrounding neighbor observations
+    """   
+    t = line.ts_
+    x = line.xy_[0]
+    y = line.xy_[1]
+    neighbors = np.zeros((24))
+    
+    c = 0
+    for i in range(-2,3):
+        for j in range(-2,3):
+            if i == 0 and j == 0 : continue
+            n = neighbor_lookup[f"{t}_{x+i}_{y+j}"] 
+            
+            if n:
+                neighbors[c] = np.mean(n)
+            c += 1
+    
+    return neighbors
+
+
+def n_neighbors(line):
+    c = 0
+    for n in range(24):
+        if line[f"neighbor_{n}"] > 0:
+            c +=1
+    return c
