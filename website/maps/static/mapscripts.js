@@ -1,5 +1,5 @@
 // Google Map
-var map;
+var map, heatmap;
 
 // markers for map
 var markers = [];
@@ -50,6 +50,10 @@ $(function() {
 
     // instantiate map
     map = new google.maps.Map(canvas, options);
+
+    // instantiate heatmap
+    heatmap = new google.maps.visualization.HeatmapLayer({
+        });
 
     // configure UI once Google Map is idle (i.e., loaded)
     google.maps.event.addListenerOnce(map, "idle", configure);
@@ -198,6 +202,10 @@ function removeMarkers()
     }
     // reset markers
     markers = [];
+
+    // reset heatmap
+    heatmap.setMap(null);
+
 }
 
 /**
@@ -241,6 +249,9 @@ function update()
     var ne = bounds.getNorthEast();
     var sw = bounds.getSouthWest();
 
+    var toggle_heatmap = $("#toggle_heatmap").is(":checked");
+    console.log("Heatmap", toggle_heatmap);
+
     // get places within bounds (asynchronously)
     var parameters = {
         ne: ne.lat() + "," + ne.lng(),
@@ -273,6 +284,15 @@ function update()
        {
            addMarker(data.polluters[i], "polluter");
        }
+
+       // create heatmap
+       if (toggle_heatmap)
+       {
+         heatmap = new google.maps.visualization.HeatmapLayer({
+               data: getPoints(),
+               map: map
+             });
+       }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
 
@@ -280,3 +300,19 @@ function update()
         console.log(errorThrown.toString());
     });
 };
+
+// data points for heatmap
+function getPoints() {
+        return [
+          new google.maps.LatLng(37.782, -122.447),
+          new google.maps.LatLng(37.782, -122.443),
+          new google.maps.LatLng(37.782, -122.441),
+          new google.maps.LatLng(37.782, -122.439),
+          new google.maps.LatLng(37.782, -122.435),
+          new google.maps.LatLng(37.785, -122.447),
+          new google.maps.LatLng(37.785, -122.445),
+          new google.maps.LatLng(37.785, -122.441),
+          new google.maps.LatLng(37.785, -122.437),
+          new google.maps.LatLng(37.785, -122.435),
+        ];
+      }

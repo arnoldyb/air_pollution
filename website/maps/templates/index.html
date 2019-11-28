@@ -9,7 +9,8 @@
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
   <!-- <link href="../static/styles.css" rel="stylesheet"/> -->
   <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet"/>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_ti9X7_c3dsFkON13Q0MKr08aPXVs9pg"></script>
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_ti9X7_c3dsFkON13Q0MKr08aPXVs9pg"></script> -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_ti9X7_c3dsFkON13Q0MKr08aPXVs9pg&libraries=visualization">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
 
@@ -48,6 +49,7 @@
               </div>
                 <div><input type="checkbox" id="toggle_existing" name="toggle_existing"> Show existing sensors</div>
                 <div><input type="checkbox" id="toggle_polluters" name="toggle_polluters"> Show registered polluters</div>
+                <div><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Show heatmap</div>
                 <div class="btnsub"><input type="submit" id="btnsub" value="Update" /></div>
             </div>
         </form>
