@@ -14,6 +14,10 @@ a:active {
     text-decoration: underline;
 }
 
+#link {
+	color: blue
+}
+
 .coverImage {
     background-image: url('images/city1.jpg');
     margin-top: -20px;
@@ -119,6 +123,7 @@ a:active {
     color: #595959;
     line-height: 30px;
     font-size: 14pt;
+	
 }
 
 
