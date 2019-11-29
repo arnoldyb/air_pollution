@@ -15,8 +15,10 @@
             <ul class="topBar">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#background">About</a></li>
-                <li><a href="#approach">Use Cases</a></li>
-                <li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
+                <li><a href="#approach">Uses</a></li>
+				<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
+                <li><a href="#model">Model</a></li>
+                <li><a href="#helpout">Help Out</a></li>
                 <li><a href="#team">Team</a></li>
             </ul>
         </nav>
@@ -26,8 +28,7 @@
         <div class="coverImage">
             <div class="overlay">
                 <h1 class="coverTitle">FairAir</h1>
-                <p class="coverCaption">Filling the gaps in air pollution monitoring</p>
-				<!--A tool for optimal air pollution sensor placement. All communities deserve air pollution monitoring. -->
+                <p class="coverCaption">Filling the gaps in air pollution monitoring</p>			
                 <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button id="coverBtn">Try Demo</button></a>
             </div>
 
@@ -37,22 +38,12 @@
 
     <section id="background">
 
-
-
         <h1 class="introTitle">The Big Picture</h1>
 		<h2 class="introGrab">4 million people die annually due to outdoor air pollution</h2>
         <p class="introDetails">We can push back on polluters with better air quality monitoring. The governent
 			often places its sensors away from pollution sources. With the price of sensors falling, community groups
 			and residents are starting to buy their own from companies like PurpleAir.com. So far, most sensors wind
 			up in wealthier neighborhoods that face less pollution. Our tool aims to change this.
-
-			<!--Government sensors are intentionally placed
-			far away from pollution sources and don't shine light on our most heavily polluted neighborhoods. Low-cost
-			air pollution sensors, such as those manufactured by Purple Air, have a chance to change this. Purple Air
-			sensor count has increased eight-fold in just three years, but sensors tend to be installed in affluent
-			neighborhoods far from polluters, while our	neighbors suffering from the most pollution can least afford
-			to install them. We propose a tool for identifying	optimal sensor placement to extract the maximum
-			potential out of this sensor explosion.-->
 		</p>
 		<p class="introDetails">
 			<b>FairAir predicts which areas on a map face the most air pollution and recommends the best place
@@ -62,21 +53,6 @@
 			Optimal placement of sensors ensures disadvantaged communities have access to air quality data, improves air
 			quality models for everyone, and saves money from being wasted on redundant sensors.
 		</p>
-<!--		<p class="introDetails">
-			<ul class="introDetails">
-			<li>ensures disadvantaged communities have access to air quality data</li>
-			<li>improves air quality models for everyone living in a region</li>
-			<li>saves money from being wasted on redundant sensor installations</li>
-			</ul>-->
-			<!--With our optimal placement tool, communities can install sensors in areas of greatest need, allowing for more accurate
-			pollution estimates throughout a city. We believe that the increase in transparency around air pollution will spur
-			better policy, saving lives and improving the health of our communities.
-
-			We also can save hundreds of thousands of dollars
-			in hardware costs by diverting needless installations in areas already teeming with sensors toward sparser areas where even a few sensors provide much needed information. Finally, we are
-			proud that we will disproportionally benefit disadvantaged communities who cannot afford to purchase these sensors
-			and whose pollution problems would otherwise remain invisible and forgotten.-->
-        </p>
     </section>
 
     <section id="approach">
@@ -106,30 +82,6 @@
 					Live far from a sensor and can't afford one? FairAir offers a free prediction of the air quality in your neighborhood using
 					pollution, weather, and topographic data. No model is perfect, and ours is improved when more sensors are placed optimally.
                 </p>
-<!--                <h3>Audience</h3>
-                <hr />
-                <p>
-                    We have spoken with activists, professors, and EPA specialists, and have gone into the trenches on toxic tours and climate marches.
-					The vocation of activism resonated with us the most and we decided to help those who fight for our clean air every day.
-                </p>
-            </div>
-            <div class="approachDivs">
-                <h3>Objective</h3>
-                <hr />
-                <p>
-                    After the passage of California law XXX, which provides funding for installation of sensors in underrepresented areas, what activists
-					have told us is that they need help placing sensors in the best way possible. They are interested in equity, impact, and coverage, so
-					we have created several metrics in our demo and placed the choice in activists' hands.
-                </p>
-            </div>
-            <div class="approachDivs">
-                <h3>Differentiator</h3>
-                <hr />
-                <p>
-                    There are a variety of virtual sensing solutions on the market. They are able to infer to varying degrees of accuracy pollution levels
-					at locations without sensors. This is an important component of the story, but we differentiate ourselves by taking the
-					next step and a comprehensive solution, making recommendations for additional sensors based on a virtual sensing system.
-                </p>-->
 
             </div>
         </div>
@@ -143,6 +95,35 @@
 			<button class="demoButton" onclick="window.location.href = 'http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083';">Click Me!</button>
 			</center>
 		</div>
+    </section>
+
+    <section id="model">
+        <h1 class="approachTitle">How It Works</h1>
+        <p class="introDetails">
+		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. Additionally, satellite imagery provides elevation, vegetation, and other landscape information.
+		</p>
+		<p class="introDetails">
+		The model focuses on one specific type of air pollution: particulate matter that is 2.5 micrometers in diameter, commonly referred to as PM2.5. Pollution particles this small can move deeply into human lungs. Research has linked PM2.5 exposure to many health problems, including asthma, irregular heartbeat, nonfatal heart attacks, and premature death.		
+		</p>
+		<p class="introDetails">
+		FairAir makes a prediction of the weekly average PM2.5 levels at intervals of 1 kilometer [??] on a regional grid. Then, taking into account the distance of nearby existing sensors, FairAir will recommend the optimal place to put a new sensor. FairAir tries to keep new sensors at least 1.4 kilometers away from existing sensors. This is the distance at which the accuracy of FairAir’s predictions begins to get substantially worse.
+		</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="helpout">
+        <h1 class="approachTitle">How To Help</h1>
+        <p class="introDetails">
+		If you're impacted by dirty air, organize with your neighbors, community, and local groups to fight for your right to clean air. Get involved with local organizations such as:<br>
+		* <a href="http://www.cbecal.org/">Communities for a Better Environment</a><br>
+		* <a href="http://www.woeip.org/">West Oakland Environmental Indicators Project</a>
+		</p>
+		<p class="introDetails">
+		If you're not directly impacted, support communities who are affected with your time and financial resources.
+		</p>
+            </div>
+        </div>
     </section>
 
     <section id="team">
