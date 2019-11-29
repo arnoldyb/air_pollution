@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import json
 import datetime
+from datetime import date, timedelta
 import re
 import ast
 from fastparquet import ParquetFile, write
@@ -11,7 +12,7 @@ import boto3
 import s3fs
 from geopy.distance import distance
 import geopy
-from getData import get_data
+# from getData import get_data
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -38,6 +39,17 @@ def createHashKey(row):
 
     return hash(str_lat + str_lon)
 
+def timeOfDay(hour):
+    if int(hour) >=0 and int(hour) < 6:
+        return 'night'
+    elif int(hour) >=6 and int(hour) < 12:
+        return 'morning'
+    elif int(hour) >=12 and int(hour) < 18:
+        return 'afternoon'
+    elif int(hour) >=18 and int(hour) < 24:
+        return 'evening'
+    else:
+        return 'other'
 
 # Function for mapping closest lat-lon data point
 def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
@@ -131,5 +143,77 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
         s3_resource = boto3.resource('s3')
         write('midscapstone-whos-polluting-my-air/CombinedDailyInterpolated/20{2}{0}{1:02}.parquet'.format(month, day, yr), combined_df, open_with=myopen)
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedDailyInterpolated/20{2}{0}{1:02}.parquet'.format(month, day, yr)).Acl().put(ACL='public-read')
+        return combined_df
     except Exception as e:
         print("*** EXCEPTION IN COMBINE DATA *** {}".format(e))
+
+# Function to add daily data to monthly folder
+def addToMonthly(df, month, year):
+
+    mth = "{:0>2}".format(month)
+    yr = '20' + str(year)
+
+    # define direction degree range by rounding to nearest cardinal direction
+    # tried a reduced range of only +/- 15 degrees instead of 45 degrees
+    NORTH = (346,15)
+    EAST = (76,105)
+    SOUTH = (166,195)
+    WEST = (256,285)
+
+    try:
+        df.reset_index(inplace=True, drop=True)
+
+        # remove rows with na data for 2_5um
+        df = df[df['2_5um'].notna()]
+        df = df[df.sys_maint_reqd != 1]
+        df = df[df.high_reading_flag != 1]
+        df = df[df.device_loc_typ == 'outside']
+
+        df['wkday'] = df['created_at'].apply(lambda x: datetime.datetime.strptime(x,"%Y/%m/%dT%H:%M").strftime("%w"))
+        df['daytype'] = df['wkday'].apply(lambda x: 'Weekend' if x in ('0','6') else 'Weekday')
+        df['timeofday'] = df['hour'].apply(lambda x: timeOfDay(x))
+
+        # go through the dataframe and add new categorical column that indicates direction:
+        # North, South, East, West, No wind, Missing, ERROR
+
+        wind_compass = []
+        for row in range(len(df)):
+            try:
+                degree = int(df.loc[row].wind_direction)
+            except Exception as e:
+                wind_compass.append('Missing')
+                continue
+            if df.loc[row].wind_speed == 0:
+                wind_compass.append('No wind')
+            elif degree >= NORTH[0] or degree <= NORTH[1]:
+                wind_compass.append('North')
+            elif degree >= EAST[0] and degree <= EAST[1]:
+                wind_compass.append('East')
+            elif degree >= SOUTH[0] and degree <= SOUTH[1]:
+                wind_compass.append('South')
+            elif degree >= WEST[0] and degree <= WEST[1]:
+                wind_compass.append('West')
+            else:
+                wind_compass.append('ERROR')
+        df['wind_compass'] = wind_compass
+
+        try:
+            # grab current monthly file
+            print("*** GRAB EXISTING FILE ***")
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}}{}.parquet'.format(yr, mth)).load()
+            pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedMonthly/{}}{}.parquet'.format(yr, mth), open_with=myopen)
+            month_df=pf.to_pandas()
+            month_df = month_df.append(df,ignore_index=True)
+        except:
+            # start of new month
+            print("*** CREATE NEW FILE ***")
+            month_df = df.copy()
+
+        # Write to S3
+        s3 = s3fs.S3FileSystem()
+        myopen = s3.open
+        s3_resource = boto3.resource('s3')
+        write('midscapstone-whos-polluting-my-air/CombinedMonthly/{}{}.parquet'.format(yr, mth), month_df, open_with=myopen)
+        s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}{}.parquet'.format(yr, mth)).Acl().put(ACL='public-read')
+    except Exception as e:
+        print("*** EXCEPTION IN MONTHLY DATA *** {}".format(e))

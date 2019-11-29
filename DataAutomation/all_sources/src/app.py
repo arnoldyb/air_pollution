@@ -61,6 +61,9 @@ def handler(event, context):
     endindex = startindex + 1
     dateint = int(prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%Y%m")) * 1000000
     yr = prevday.replace(tzinfo=tz.tzutc()).astimezone(timezone('US/Pacific')).strftime("%y")
+    # last_dayofmonth = (datetime.datetime(int('20' + str(yr)), int(month)%12+ 1, 1)- datetime.timedelta(1)).strftime("%d")
+    # firstday = '20' + str(yr) + '/' + str(month) + '/01'
+    # lastday = '20' + str(yr) + '/' + str(month) + '/' + str(last_dayofmonth)
 
     # Get address dataframe
     print("*** GET ADDRESS ***")
@@ -98,11 +101,11 @@ def handler(event, context):
 
             # Combine data and save to file
             print("*** COMBINE DATA ***")
-            commonAirPollUtils.combineData(dly_noaa_df, int_epa_df, bay_ts_df, month, i, yr)
+            comb_df = commonAirPollUtils.combineData(dly_noaa_df, int_epa_df, bay_ts_df, month, i, yr)
 
             # Add to monthly folder
             print("*** MONTHLY DATA ***")
-            commonAirPollUtils.combineData(dly_noaa_df, int_epa_df, bay_ts_df, month, i, yr)
+            commonAirPollUtils.addToMonthly(comb_df, month, yr)
         except Exception as e:
             print("Error processing data for {}/{}: \n{}".format(month, startindex, e))
             continue
