@@ -10,7 +10,7 @@ import botocore
 import random, json
 from datetime import datetime, timedelta
 from fastparquet import ParquetFile
-
+from sklearn import preprocessing
 from flask import Flask, render_template, request, redirect, Response, url_for, jsonify
 from flask_jsglue import JSGlue
 
@@ -22,16 +22,16 @@ def output():
     # load existing sensor network
     try:
         # load from local instance
-        print("Looking for sensor file locally.")
+        print("Looking for sensor file locally.", flush=True)
         df = pd.read_parquet("./pasensors.parquet")
     except:
         # otherwise go to S3. Try today's date first, then iteratively look backward day by day
-        print("No local sensor file. Searching S3.")
+        print("No local sensor file. Searching S3.", flush=True)
         file_date = datetime.today()
         while True:
             try:
                 filename = file_date.strftime('%Y%m%d') + ".parquet"
-                print("Looking for file " + filename)
+                print("Looking for file " + filename, flush=True)
                 s3 = s3fs.S3FileSystem()
                 myopen = s3.open
                 s3_resource = boto3.resource('s3')
@@ -47,14 +47,46 @@ def output():
     # load polluters
     global polluter_df
     try:
-        print("Looking for polluter file locally.")
+        print("Looking for polluter file locally.", flush=True)
         polluter_df = pd.read_csv("./polluters.csv")
     except:
-        print("No local polluter file. Searching S3.")
+        print("No local polluter file. Searching S3.", flush=True)
         bucket = "midscapstone-whos-polluting-my-air"
         s3 = boto3.client('s3')
         obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
         polluter_df = pd.read_csv(obj['Body'])
+
+    # Load predictions
+    global df_predictions
+    try:
+        print("Looking for prediction file locally.", flush=True)
+        df_predictions = pd.read_csv("./preds_loneliness.csv")
+    except:
+        print("No local prediction file. Searching S3.", flush=True)
+        bucket = "midscapstone-whos-polluting-my-air"
+        s3 = boto3.client('s3')
+        # obj = s3.get_object(Bucket= bucket, Key= 'UtilFiles/preds.csv')
+        obj = s3.get_object(Bucket=bucket, Key='UtilFiles/preds_loneliness.csv')
+        df_predictions = pd.read_csv(obj['Body'])
+    df_predictions.drop(['xy_'], axis=1, inplace=True)
+    # df_predictions[['lat', 'lon']] = df[['lat', 'lon']].apply(pd.to_numeric)
+
+    # normalize predictions
+    min_max_scaler = preprocessing.MinMaxScaler()
+    preds = df_predictions[['preds']].values.astype(float)
+    preds_normalized = min_max_scaler.fit_transform(preds)
+    df_predictions['preds_normalized'] = preds_normalized
+
+    # normalize loneliness
+    lonely = df_predictions[['lonely_factor']].values.astype(float)
+    lonely_factor_normalized = min_max_scaler.fit_transform(lonely)
+    df_predictions['lonely_factor_normalized'] = lonely_factor_normalized
+
+    # create combined score
+    loneliness_weight = 1
+    df_predictions['score'] = loneliness_weight * df_predictions['preds_normalized'] + \
+                              (1 - loneliness_weight) * df_predictions['lonely_factor_normalized']
+    print(df_predictions.head(), flush=True)
 
     # serve index template
     return render_template('index.html')
@@ -125,26 +157,23 @@ def update():
     # explode northeast corner into two variables
     (ne_lat, ne_lng) = [float(s) for s in request.args.get("ne").split(",")]
 
+    # load predictions and select recommendations
     loc_lst = []
+    # try:
+    # filter by current bounding box
+    df_filtered = df_predictions[(df_predictions.lat > sw_lat) & (df_predictions.lat < ne_lat) &
+                                 (df_predictions.lon > sw_lng) & (df_predictions.lon < ne_lng)]
+    df_filtered.reset_index(inplace=True, drop=True)
+    print(df_filtered.head(), flush=True)
 
-    try:
-        bucket = "midscapstone-whos-polluting-my-air"
-        s3 = boto3.client('s3')
-        obj = s3.get_object(Bucket= bucket, Key= 'UtilFiles/preds.csv')
-        df = pd.read_csv(obj['Body'])
-        df.drop(['xy_'], axis=1, inplace=True)
-
-        df[['lat','lon']] = df[['lat','lon']].apply(pd.to_numeric)
-
-        df_filtered = df[(df.lat > sw_lat) & (df.lat < ne_lat) & (df.lon > sw_lng) & (df.lon < ne_lng)]
-        df_filtered.reset_index(inplace=True, drop=True)
-        df_sorted = df_filtered.sort_values(by='preds', ascending=False)
-        top_lat = df_sorted.head(q).lat.tolist()
-        top_lon = df_sorted.head(q).lon.tolist()
-        loc_lst = list(zip(top_lat, top_lon))
-        print("*** LOCATION ***: {}".format(loc_lst))
-    except Exception as e:
-        print("*** EXCEPTION IN GET ADDRESS: {}".format(e))
+    # sort and select top candidates
+    df_sorted = df_filtered.sort_values(by='score', ascending=False)
+    top_lat = df_sorted.head(q).lat.tolist()
+    top_lon = df_sorted.head(q).lon.tolist()
+    loc_lst = list(zip(top_lat, top_lon))
+    #     print("*** LOCATION ***: {}".format(loc_lst))
+    # except Exception as e:
+    #     print("*** EXCEPTION IN GET ADDRESS: {}".format(e), flush=True)
 
     location_json = {
         "recommendations": loc_lst,
