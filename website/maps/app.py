@@ -19,33 +19,42 @@ JSGlue(app)
 
 @app.route('/')
 def output():
-    # get latest existing sensor network from S3
-    # try today's date first, then iteratively look backward day by day
-    file_date = datetime.today()
-    while True:
-        try:
-            # filename = file_date.strftime('%Y%m%d') + ".parquet"
-            # print("trying to load " + filename)
-            # s3 = s3fs.S3FileSystem()
-            # myopen = s3.open
-            # s3_resource = boto3.resource('s3')
-            # s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}'.format(filename)).load()
-            # pf = ParquetFile('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}'.format(filename), open_with=myopen)
-            # df = pf.to_pandas()
-            df = pd.read_parquet("./pasensors.parquet")
-            global unique_sensor_df
-            unique_sensor_df = df.drop_duplicates(subset="sensor_id")
-            break
-        except botocore.exceptions.ClientError:
-            file_date = file_date - timedelta(days=1)
+    # load existing sensor network
+    try:
+        # load from local instance
+        print("Looking for sensor file locally.")
+        df = pd.read_parquet("./pasensors.parquet")
+    except:
+        # otherwise go to S3. Try today's date first, then iteratively look backward day by day
+        print("No local sensor file. Searching S3.")
+        file_date = datetime.today()
+        while True:
+            try:
+                filename = file_date.strftime('%Y%m%d') + ".parquet"
+                print("Looking for file " + filename)
+                s3 = s3fs.S3FileSystem()
+                myopen = s3.open
+                s3_resource = boto3.resource('s3')
+                s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}'.format(filename)).load()
+                pf = ParquetFile('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}'.format(filename), open_with=myopen)
+                df = pf.to_pandas()
+                break
+            except botocore.exceptions.ClientError:
+                file_date = file_date - timedelta(days=1)
+    global unique_sensor_df
+    unique_sensor_df = df.drop_duplicates(subset="sensor_id")
 
     # load polluters
-    # bucket = "midscapstone-whos-polluting-my-air"
-    # s3 = boto3.client('s3')
-    # obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
     global polluter_df
-    # polluter_df = pd.read_csv(obj['Body'])
-    polluter_df = pd.read_csv("./polluters.csv")
+    try:
+        print("Looking for polluter file locally.")
+        polluter_df = pd.read_csv("./polluters.csv")
+    except:
+        print("No local polluter file. Searching S3.")
+        bucket = "midscapstone-whos-polluting-my-air"
+        s3 = boto3.client('s3')
+        obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
+        polluter_df = pd.read_csv(obj['Body'])
 
     # serve index template
     return render_template('index.html')
