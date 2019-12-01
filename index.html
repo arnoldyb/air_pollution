@@ -100,16 +100,14 @@
     <section id="model">
         <h1 class="introTitle">How It Works</h1>
         <p class="introDetails">
-		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. Additionally, satellite imagery provides elevation, vegetation, and other landscape information.
+		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines hourly air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. Additionally, our model accounts for static features such as topography and land use.
 		</p>
 		<p class="introDetails">
 		The model focuses on one specific type of air pollution: particulate matter that is 2.5 micrometers in diameter, commonly referred to as PM2.5. Pollution particles this small can move deeply into human lungs. Research has linked PM2.5 exposure to many health problems, including asthma, irregular heartbeat, nonfatal heart attacks, and premature death.		
 		</p>
 		<p class="introDetails">
-		FairAir makes a prediction of the weekly average PM2.5 levels at intervals of 500 meters on a regional grid. Then, taking into account the distance of nearby existing sensors, FairAir will recommend the optimal place to put a new sensor. FairAir tries to keep new sensors at least 1.4 kilometers away from existing sensors. This is the distance at which the accuracy of FairAir’s predictions begins to get substantially worse.
+		FairAir predicts hourly PM2.5 levels at intervals of 500 meters on a regional grid. Each gridpoint is then scored on two factors: its average predicted PM2.5 level over the past seven days and the number of existing sensors in its vicinity. The user is then shown locations where both sensor coverage is sparse and predicted PM2.5 is high. Adding real-life sensors to such  areas would not only provide real-time air quality readings but also improve the accuracy of our model, which includes actual neighbor PM2.5 values as features.
 		</p>
-            </div>
-        </div>
     </section>
 
     <section id="helpout">
@@ -127,8 +125,6 @@
 		<p class="introDetails">
 		If you're not directly impacted, support communities who are affected with your time and financial resources.
 		</p>
-            </div>
-        </div>
     </section>
 
     <section id="team">
