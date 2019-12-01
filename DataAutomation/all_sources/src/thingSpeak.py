@@ -21,17 +21,14 @@ class CustomError(Exception):
     def __str__(self):
         return self.message
 
-
-# Get thingspeak data:
 def getThingspeakData(bayarea_purple_df, month, day, yr):
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
+    """Function to combine thingspeak data from the two sensors"""
+
     try:
         bay_pa_thingspeak_df = bayarea_purple_df[['sensorhash', 'thingspeak_primary_id','thingspeak_primary_id_read_key',
                                                    'thingspeak_secondary_id','thingspeak_secondary_id_read_key']]
         bay_pa_thingspeak_df.drop_duplicates(inplace=True)
         bay_pa_thingspeak_df.reset_index(inplace=True, drop=True)
-
-        print("Length of pa: {}".format(len(bay_pa_thingspeak_df)))
 
         ts_s_df = genTS2DF(bay_pa_thingspeak_df, month, "{:02}".format(day), yr)
         ts_p_df = genTS1DF(bay_pa_thingspeak_df, month, "{:02}".format(day), yr)
@@ -41,13 +38,10 @@ def getThingspeakData(bayarea_purple_df, month, day, yr):
         bay_ts_df = pd.merge(ts_s_df, ts_p_df,  how='left', left_on=['sensorhash','created'], right_on=['sensorhash','created'])
         bay_ts_df.drop(['created_at_y'], axis=1, inplace=True)
 
-    #     # Write to file
-    #     parquet_file = "{}/thingspeak/thingspeak_20{}{}{:02}.parquet".format(datafolder, yr, month, day)
-    #     write(parquet_file, bay_ts_df,compression='GZIP')
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
-        write('midscapstone-whos-polluting-my-air/ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day), bay_ts_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day), bay_ts_df, compression='GZIP', open_with=myopen)
         s3_resource = boto3.resource('s3')
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day)).Acl().put(ACL='public-read')
 
@@ -56,10 +50,8 @@ def getThingspeakData(bayarea_purple_df, month, day, yr):
 
     return bay_ts_df
 
-
-
-# Get data from sensor 1
 def genTS1DF(sensordf, month, startday, yr):
+    """Function to get data from sensor 1"""
     try:
         https = urllib3.PoolManager()
 
@@ -69,7 +61,6 @@ def genTS1DF(sensordf, month, startday, yr):
         for ind, val in sensordf.iterrows():
             qrystr = "https://api.thingspeak.com/channels/{0}/feeds.json?api_key={1}&start=20{4}-{2}-{3}%2000:00:00&end=20{4}-{2}-{3}%2023:59:59& \
                         timezone=America/Los_Angeles&timescale=10".format(val['thingspeak_primary_id'], val['thingspeak_primary_id_read_key'], month, startday, yr)
-
             try:
                 count += 1
                 r = https.request('GET',qrystr)
@@ -80,7 +71,6 @@ def genTS1DF(sensordf, month, startday, yr):
                     df['sensorhash'] = val['sensorhash']
                     ts_p_df = pd.concat([ts_p_df,df],ignore_index=True)
             except Exception as e:
-    #             print(e)
                 errCount += 1
                 continue
         print("Of the {} requests, {} errored out.".format(count, errCount))
@@ -92,10 +82,8 @@ def genTS1DF(sensordf, month, startday, yr):
         print("*** EXCEPTION IN GEN TS1DF *** {}".format(e))
     return ts_p_df
 
-
-
-# Get data from sensor 2
 def genTS2DF(sensordf, month, startday, yr):
+    """Function to get data from sensor 2"""
     try:
         https = urllib3.PoolManager()
 
@@ -105,7 +93,6 @@ def genTS2DF(sensordf, month, startday, yr):
         for ind, val in sensordf.iterrows():
             qrystr = "https://api.thingspeak.com/channels/{0}/feeds.json?api_key={1}&start=20{4}-{2}-{3}%2000:00:00&end=20{4}-{2}-{3}%2023:59:59& \
                         timezone=America/Los_Angeles&timescale=10".format(val['thingspeak_secondary_id'], val['thingspeak_secondary_id_read_key'], month, startday, yr)
-
             try:
                 count += 1
                 r = https.request('GET',qrystr)
@@ -116,7 +103,6 @@ def genTS2DF(sensordf, month, startday, yr):
                     df['sensorhash'] = val['sensorhash']
                     ts_s_df = pd.concat([ts_s_df,df],ignore_index=True)
             except Exception as e:
-    #             print(e)
                 errCount += 1
                 continue
         print("For {}, Of the {} requests, {} errored out.".format(startday, count, errCount))
@@ -129,11 +115,8 @@ def genTS2DF(sensordf, month, startday, yr):
 
     return ts_s_df
 
-
-
-# Merge Purple Air data
 def mergePurpleAir(pa_df, ts_df, address_df, month, day, yr):
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
+    """Function to merge thingspeak and purple air data"""
 
     # Some numeric columns may have "nan" as a string - convert these values to np.nan
     # so that the data type of these columns are correctly identified
@@ -175,10 +158,6 @@ def mergePurpleAir(pa_df, ts_df, address_df, month, day, yr):
         # Convert data type of attributes to string
         ts_df[['high_reading_flag','sensor_id','parent_id', 'is_owner']] = ts_df[['high_reading_flag','sensor_id','parent_id', 'is_owner']].astype(str)
 
-    #     # Save final dataframe for future use
-    # #     parquet_file = "{}/pa_ts/201909{}.parquet".format(datafolder,days_list[i])
-    #     parquet_file = "{}/pa_ts/20{}{}{:02}.parquet".format(datafolder, yr, month, day)
-    #     write(parquet_file, ts_df,compression='GZIP')
     except  Exception as e:
         print("*** EXCEPTION IN MERGE PURPLE AIR *** {}".format(e))
 

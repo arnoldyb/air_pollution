@@ -23,8 +23,6 @@ class CustomError(Exception):
 def createNOAAdf(lines, fileName):
     """ Helper function to process noaa data"""
 
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
-
     # split lines and data chunks
     data = [] # an array of arrays, inner arrays are all data for one record, outer array is all records
     for line in lines:
@@ -115,19 +113,12 @@ def createNOAAdf(lines, fileName):
 
     sample_df = pd.DataFrame(data, columns = col_names)
 
-#     # save Dataframe to file
-#     parquet_file = "{}/noaa/{}.parquet".format(datafolder, fileName)
-#     write(parquet_file, sample_df,compression='GZIP')
-
     return sample_df
 
-
-# Get noaa data for the month
 def getNOAAData(month, yr):
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
+    """Function to get noaa data for the month"""
 
-    # Read station data from file that was stored earlier
-#     unique_station_df = pd.read_parquet("{}/noaa/uniq_station_data.parquet".format(datafolder))
+    # Read station data from file that was stored in s3
     try:
         try:
             s3 = s3fs.S3FileSystem()
@@ -147,15 +138,9 @@ def getNOAAData(month, yr):
         lines = [] # an array of each read line
         bucket = "midscapstone-whos-polluting-my-air"
         s3 = boto3.client('s3')
-    #     for station in station_list:
-    #         filepath = "{3}/noaa/fmd_201910/64010{0}20{2}{1}".format(station, month, yr, datafolder)
-    # #         filepath = "ftp://ftp.ncdc.noaa.gov/pub/data/asos-fivemin/6401-20{2}/64010{0}20{2}{1}.dat".format(station, month, yr)
-    #         try:
-    #             for line in pd.read_csv(filepath_or_buffer=filepath , encoding='utf-8', header=None, chunksize=1):
-    #                 lines.append(line.iloc[0,0])
         for station in station_list:
             try:
-                file_name = "AsosRaw/64010{0}20{2}{1}".format(station, '10', '19')
+                file_name = "AsosRaw/64010{0}20{2}{1}".format(station, month, yr)
                 obj = s3.get_object(Bucket= bucket, Key= file_name)
                 df = pd.read_csv(obj['Body'], header=None)
                 df.columns = ['dataval']
@@ -165,10 +150,7 @@ def getNOAAData(month, yr):
                 print("*** EXCEPTION IN GET NOAA DATA ITERROWS {}: {}".format(line, e))
 
         # Create noaa dataframe for the month
-        print("*** BEFORE CREATE NOAA CALL ***")
         noaa_df = createNOAAdf(lines, '20' + yr + month)
-        print("*** AFTER CREATE NOAA CALL ***")
-    #     noaa_df = pd.read_parquet("{}/noaa/{}.parquet".format(datafolder, '20' + yr + month))
 
         # Drop rows where wind speed is not numeric
         noaa_df = noaa_df[noaa_df.wind_speed != 'T']
@@ -187,21 +169,17 @@ def getNOAAData(month, yr):
         print("*** EXCEPTION IN GET NOAA DATA *** {}".format(e))
         return None
 
-
-
-# Get daily noaa data for the given month
 def getDailyNOAA(bay_noaa_df, month, day, yr):
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
+    """Function to get daily noaa data for the given month"""
     try:
         datestr = '{}/{:02}/{}'.format(month, day, yr)
         dly_noaa_df = bay_noaa_df[bay_noaa_df.date == datestr]
         dly_noaa_df.drop(['year', 'month','day','hour','minute','date','timestamp'], axis=1, inplace=True)
-    #     parquet_file = "{0}/noaa/daily/asos_20{3}{1}{2:02}.parquet".format(datafolder, month, day, yr)
-    #     write(parquet_file, dly_noaa_df,compression='GZIP')
+        
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
-        write('midscapstone-whos-polluting-my-air/AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr), dly_noaa_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr), dly_noaa_df, compression='GZIP', open_with=myopen)
         s3_resource = boto3.resource('s3')
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr)).Acl().put(ACL='public-read')
 
