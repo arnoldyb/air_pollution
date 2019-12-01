@@ -123,7 +123,7 @@ a:active {
     color: #595959;
     line-height: 30px;
     font-size: 14pt;
-	
+
 }
 
 
@@ -179,7 +179,27 @@ a:active {
     border: none;
 }
 
+/* Model Styles */
 
+#model {
+    height: auto;
+    background-color: #3d5c5c;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-top: -30px;
+}
+
+.modelDetails {
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    padding-bottom: 2%;
+    color: #fff;
+    line-height: 30px;
+    font-size: 14pt;
+
+}
 /* Demo styles*/
 
 #demo {
@@ -288,7 +308,7 @@ a:active {
 #footer {
     width: 100%;
     height: 7vh;
-    background-color: #404040;
+    background-color: rgb(43,41,41);
     margin-top: -11px;
 }
 
