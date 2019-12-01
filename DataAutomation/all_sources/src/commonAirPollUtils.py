@@ -12,7 +12,6 @@ import boto3
 import s3fs
 from geopy.distance import distance
 import geopy
-# from getData import get_data
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -24,13 +23,12 @@ class CustomError(Exception):
     def __str__(self):
         return self.message
 
-
 def createHashKey(row):
+    """Helper function to create a hash key based on lat and lon"""
     if np.isnan(row['lat']):
         str_lat = ''
     else:
         str_lat = str(row['lat'])
-
 
     if np.isnan(row['lon']):
         str_lon = ''
@@ -40,6 +38,7 @@ def createHashKey(row):
     return hash(str_lat + str_lon)
 
 def timeOfDay(hour):
+    """Helper function to convert hour to a categorical value"""
     if int(hour) >=0 and int(hour) < 6:
         return 'night'
     elif int(hour) >=6 and int(hour) < 12:
@@ -51,8 +50,8 @@ def timeOfDay(hour):
     else:
         return 'other'
 
-# Function for mapping closest lat-lon data point
 def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
+    """Helper function for mapping closest lat-lon data point"""
     # Add lat-lon based hashes to noaa and purple air dataframes
     lkp_df[maphashcol] = lkp_df.apply (lambda row: createHashKey(row), axis=1)
 
@@ -63,12 +62,6 @@ def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
 
     # Find the closest lat-lon mapping corresponding to the purple air records
     closest_points = {}
-#     Euclidean distance based calculation
-#     for name, point in ts_latlon_df.iterrows():
-#         distances = (((lkp_latlon_df - point) ** 2).sum(axis=1)**.5)
-#         closest_points[name] = distances.sort_values().index[0]
-
-#     Geopy based distance calculation
     for name, opoint in ts_latlon_df.iterrows():
         origin = geopy.point.Point(opoint)
         lstDist = []
@@ -93,12 +86,9 @@ def mapLatLon(ts_df, ts_latlon_df, lkp_df, maphashcol, datecol):
 
     return combined_df
 
-
-# Function to combine data from various sources
 def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
+    """Function to combine noaa, epa and sensor data"""
     try:
-#     datafolder = "/Users/apaul2/Documents/_Common/capstone/Project/data"
-
         # Add lat-lon based hashes to noaa and purple air dataframes
         bay_ts_df['tslatlonhash'] = bay_ts_df.apply (lambda row: createHashKey(row), axis=1)
 
@@ -118,6 +108,8 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
             print("*** EXCEPTION IN COMBINING NOAA DATA *** {}".format(e))
             combined_df = mapLatLon(bay_ts_df, ts_latlon_df, epa_df, 'epalatlonhash', 'created')
             combined_df.drop(['tslatlonhash', 'epalatlonhash', 'utc', 'parameter'], axis=1, inplace=True)
+
+            #Dummy columns for noaa data in case of noaa error
             combined_df['wban_number'] = None
             combined_df['call_sign'] = None
             combined_df['call_sign2'] = None
@@ -136,9 +128,7 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
 
         # Only outside sensors
         combined_df = combined_df[combined_df.device_loc_typ == 'outside']
-    #     # Write to file
-    #     parquet_file = "{0}/combined_interpolated/20{3}{1}{2:02}.parquet".format(datafolder, month, day, yr)
-    #     write(parquet_file, combined_df,compression='GZIP')
+
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
@@ -149,8 +139,8 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
     except Exception as e:
         print("*** EXCEPTION IN COMBINE DATA *** {}".format(e))
 
-# Function to add daily data to monthly folder
 def addToMonthly(df, month, year):
+    """Function to add daily data to monthly folder"""
 
     mth = "{:0>2}".format(month)
     yr = '20' + str(year)
@@ -169,7 +159,6 @@ def addToMonthly(df, month, year):
         df = df[df['2_5um'].notna()]
         df = df[df.sys_maint_reqd != 1]
         df = df[df.high_reading_flag != 1]
-        # df = df[df.device_loc_typ == 'outside']
 
         df['wkday'] = df['created_at'].apply(lambda x: datetime.datetime.strptime(x,"%Y/%m/%dT%H:%M").strftime("%w"))
         df['daytype'] = df['wkday'].apply(lambda x: 'Weekend' if x in ('0','6') else 'Weekday')
@@ -177,7 +166,6 @@ def addToMonthly(df, month, year):
 
         # go through the dataframe and add new categorical column that indicates direction:
         # North, South, East, West, No wind, Missing, ERROR
-
         wind_compass = []
         for row in range(len(df)):
             try:
@@ -201,14 +189,12 @@ def addToMonthly(df, month, year):
 
         try:
             # grab current monthly file
-            print("*** GRAB EXISTING FILE ***")
             s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}}{}.parquet'.format(yr, mth)).load()
             pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedMonthly/{}}{}.parquet'.format(yr, mth), open_with=myopen)
             month_df=pf.to_pandas()
             month_df = month_df.append(df,ignore_index=True)
         except:
             # start of new month
-            print("*** CREATE NEW FILE ***")
             month_df = df.copy()
 
         # Write to S3

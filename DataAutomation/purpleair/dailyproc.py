@@ -68,10 +68,8 @@ def getDailyData(s3open, s3Objs, startInd, endInd, year):
     for obj in s3Objs:
         file_name = int(obj.key.replace('PurpleAir/{}'.format(year),'').replace('.parquet',''))
         if file_name >= startInd and file_name < endInd:
-            # print("*** FILENAME: {} ***".format(file_name))
             pf=ParquetFile('midscapstone-whos-polluting-my-air/{}'.format(obj.key), open_with=s3open)
             df=pf.to_pandas()
-            # print("*** DF LENGTH: {} ***".format(len(df)))
 
             try:
                 df = pd.DataFrame.from_records(df.results)
@@ -79,7 +77,6 @@ def getDailyData(s3open, s3Objs, startInd, endInd, year):
                 df['results'] =  df['results'].map(lambda d : ast.literal_eval(d))
                 df = pd.DataFrame.from_records(df.results)
 
-            # print("*** BEFORE STATS ***")
             try:
                 # split the dict in the 'Stats' column into separate columns
                 df['Stats'] = df['Stats'].replace(np.nan, '{}', regex=True)
@@ -87,14 +84,11 @@ def getDailyData(s3open, s3Objs, startInd, endInd, year):
                 df = df.join(pd.DataFrame(df["Stats"].to_dict()).T)
                 df.drop(['Stats', 'pm','v'], axis=1, inplace=True)   # 'pm' and 'v' are the same as 'PM2_5Value'
 
-                # print("*** AFTER STATS ***")
                 df = df[['AGE', 'A_H', 'DEVICE_LOCATIONTYPE', 'Flag', 'Hidden', 'ID', 'Label', 'LastSeen', 'Lat', 'Lon', 'PM2_5Value', 'ParentID', 'THINGSPEAK_PRIMARY_ID',
                                        'THINGSPEAK_PRIMARY_ID_READ_KEY', 'THINGSPEAK_SECONDARY_ID', 'THINGSPEAK_SECONDARY_ID_READ_KEY', 'Type', 'humidity', 'isOwner', 'pressure', 'temp_f',
                                        'lastModified', 'timeSinceModified', 'v1', 'v2', 'v3', 'v4', 'v5', 'v6']]
 
-                # print("*** BEFORE CONCAT ***")
                 purple_df = pd.concat([purple_df,df],ignore_index=True)
-                # print("*** AFTER CONCAT ***")
             except Exception as e:
                 print("*** EXCEPTION IN PROCESSING STATS FOR FILE {}: {}***".format(file_name, e))
 
@@ -141,9 +135,7 @@ def updateAddress(df):
                 address_df=pf.to_pandas()
                 address_df = address_df.append(address_new_df,ignore_index=True)
 
-                print("*** WRITE TO S3 ***")
                 write('midscapstone-whos-polluting-my-air/UtilFiles/address_latlon.parquet', address_df, compression='GZIP', open_with=myopen)
-                print("*** MAKE FILE PUBLIC ***")
                 s3_resource.Object('midscapstone-whos-polluting-my-air', 'UtilFiles/address_latlon.parquet').Acl().put(ACL='public-read')
             except Exception as e:
                 print("*** EXCEPTION IN GETTING EXISTING ADDRESS: {}".format(e))
@@ -158,9 +150,6 @@ def updateAddress(df):
 
 def main():
     # Get Inputs
-    # year = '2019'
-    # month = '10'
-    # stday = '22'
     numdays = 1
     # Get year, month and day in Pacific timezone
     prevday = datetime.datetime.now()-datetime.timedelta(1)
@@ -171,7 +160,6 @@ def main():
     for i in range(int(numdays)):
         day = int(stday) + i
         daystr = "{:0>2}".format(day)
-        print("*** PROCESSING DAY: {} ***".format(day))
         startInd = int(month + daystr + '0659')
         endInd = startInd + 10000
 
@@ -182,10 +170,8 @@ def main():
         bucket = s3_resource.Bucket('midscapstone-whos-polluting-my-air')
         s3Objs = bucket.objects.filter(Prefix='PurpleAir/{}'.format(year))
 
-        print("*** CALL FUNCTION ***")
         purple_df = getDailyData(myopen, s3Objs, startInd, endInd, year)
 
-        print("*** RENAME COLUMNS ***")
         try:
             purple_df.rename(columns={'AGE':'age', 'A_H':'a_h', 'DEVICE_LOCATIONTYPE':'device_loc_typ', 'Flag':'high_reading_flag', 'Hidden':'hidden', 'ID':'sensor_id', 'Label':'sensor_name',
                                   'LastSeen':'last_seen', 'Lat':'lat', 'Lon':'lon', 'PM2_5Value':'pm2_5val', 'ParentID':'parent_id', 'THINGSPEAK_PRIMARY_ID':'thingspeak_primary_id',
@@ -228,12 +214,9 @@ def main():
             bayarea_purple_dly_df['sensorhash'] = bayarea_purple_dly_df.apply (lambda row: createHashKey(row,'thingspeak_primary_id_read_key',
                                                                                                         'thingspeak_secondary_id_read_key'), axis=1)
             # save
-            print("*** WRITE TO S3 ***")
             write('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day), bayarea_purple_dly_df, compression='GZIP', open_with=myopen)
-            print("*** MAKE FILE PUBLIC ***")
             s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day)).Acl().put(ACL='public-read')
 
-            print("*** WRITE TO LOCAL DIR ***")
             parquet_file = "/home/ec2-user/maps/pasensors.parquet"
             write(parquet_file, bayarea_purple_dly_df,compression='GZIP')
         except Exception as e:

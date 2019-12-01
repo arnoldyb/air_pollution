@@ -74,22 +74,17 @@ def handler(event, context):
     mth_hour = last_hour + relativedelta(hours=-7)
     current_month = mth_hour.strftime("%Y%m")
 
-    # last_hour=datetime.datetime(2019, 10, 1)
-    # next_hour = datetime.datetime(2019, 10, 30, 21)
-
     s3 = s3fs.S3FileSystem()
     myopen = s3.open
     s3_resource = boto3.resource('s3')
 
     try:
         # grab current monthly file
-        print("*** GRAB EXISTING FILE ***")
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaRaw/epa_{}.parquet'.format(current_month)).load()
         pf=ParquetFile('midscapstone-whos-polluting-my-air/EpaRaw/epa_{}.parquet'.format(current_month), open_with=myopen)
         month_df=pf.to_pandas()
     except:
         # start of new month
-        print("*** CREATE NEW FILE ***")
         month_df = pd.DataFrame(columns = ['Latitude', 'Longitude', 'UTC', 'Parameter', 'Unit', 'Value',
                                            'RawConcentration', 'AQI', 'Category', 'SiteName', 'AgencyName',
                                            'FullAQSCode', 'IntlAQSCode'])
@@ -97,7 +92,6 @@ def handler(event, context):
     print("Fetching", last_hour.strftime("%Y-%m-%dT%H"))
     # get data
     while True:
-        print("*** GET NEW DATA ***")
         latest_df = get_AQI(last_hour.strftime("%Y-%m-%dT%H"), next_hour.strftime("%Y-%m-%dT%H"))
 
         if latest_df.shape[0] == 0 or latest_df.shape[1] == 0:
@@ -107,15 +101,11 @@ def handler(event, context):
         else:
             break
 
-    print("*** ADD UTC COLUMN ***")
     latest_df['UTC'] = pd.to_datetime(latest_df['UTC'])
 
     # add to our df
-    print("*** COMBINE EXISTING DATA ***")
     month_df = month_df.append(latest_df,ignore_index=True)
 
-    # save
-    print("*** WRITE TO S3 ***")
+    # save to s3
     write('midscapstone-whos-polluting-my-air/EpaRaw/epa_{}.parquet'.format(current_month), month_df, compression='GZIP', open_with=myopen)
-    print("*** MAKE FILE PUBLIC ***")
     s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaRaw/epa_{}.parquet'.format(current_month)).Acl().put(ACL='public-read')
