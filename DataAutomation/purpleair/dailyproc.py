@@ -142,7 +142,7 @@ def updateAddress(df):
                 address_df = address_df.append(address_new_df,ignore_index=True)
 
                 print("*** WRITE TO S3 ***")
-                write('midscapstone-whos-polluting-my-air/UtilFiles/address_latlon.parquet', address_df, open_with=myopen)
+                write('midscapstone-whos-polluting-my-air/UtilFiles/address_latlon.parquet', address_df, compression='GZIP', open_with=myopen)
                 print("*** MAKE FILE PUBLIC ***")
                 s3_resource.Object('midscapstone-whos-polluting-my-air', 'UtilFiles/address_latlon.parquet').Acl().put(ACL='public-read')
             except Exception as e:
@@ -200,8 +200,8 @@ def main():
             # There may be duplicates in sensor data in case no new readings we obtained since the last refresh
             purple_df.drop_duplicates(inplace=True)
 
-            bayarea_purple_df = purple_df[(purple_df.lat > 37.701933) & (purple_df.lat < 38.008050)
-                                      & (purple_df.lon > -122.536985) & (purple_df.lon < -122.186437)]
+            bayarea_purple_df = purple_df[(purple_df.lat > 37.2781261) & (purple_df.lat < 38.063446)
+                                      & (purple_df.lon > -122.683496) & (purple_df.lon < -121.814281)]
             bayarea_purple_df.reset_index(inplace=True, drop=True)
 
             # Get date and time columns in local timezone
@@ -229,7 +229,7 @@ def main():
                                                                                                         'thingspeak_secondary_id_read_key'), axis=1)
             # save
             print("*** WRITE TO S3 ***")
-            write('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day), bayarea_purple_dly_df, open_with=myopen)
+            write('midscapstone-whos-polluting-my-air/PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day), bayarea_purple_dly_df, compression='GZIP', open_with=myopen)
             print("*** MAKE FILE PUBLIC ***")
             s3_resource.Object('midscapstone-whos-polluting-my-air', 'PurpleAirDaily/{}{}{:02}.parquet'.format(year, month, day)).Acl().put(ACL='public-read')
 

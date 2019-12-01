@@ -94,7 +94,7 @@ def getEPADailyData(dateint, dt_ind, month, epa_df, yr):
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
-        write('midscapstone-whos-polluting-my-air/EpaDaily/epa_20{2}{0}{1:02}.parquet'.format(month, dt_ind, yr), int_epa_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/EpaDaily/epa_20{2}{0}{1:02}.parquet'.format(month, dt_ind, yr), int_epa_df, compression='GZIP', open_with=myopen)
         s3_resource = boto3.resource('s3')
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaDaily/epa_20{2}{0}{1:02}.parquet'.format(month, dt_ind, yr)).Acl().put(ACL='public-read')
 

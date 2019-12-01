@@ -201,7 +201,7 @@ def getDailyNOAA(bay_noaa_df, month, day, yr):
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
-        write('midscapstone-whos-polluting-my-air/AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr), dly_noaa_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr), dly_noaa_df, compression='GZIP', open_with=myopen)
         s3_resource = boto3.resource('s3')
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'AsosDaily/asos_20{2}{0}{1:02}.parquet'.format(month, day, yr)).Acl().put(ACL='public-read')
 

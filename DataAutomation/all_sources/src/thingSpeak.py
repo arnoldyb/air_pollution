@@ -47,7 +47,7 @@ def getThingspeakData(bayarea_purple_df, month, day, yr):
         # Write to S3
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
-        write('midscapstone-whos-polluting-my-air/ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day), bay_ts_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day), bay_ts_df, compression='GZIP', open_with=myopen)
         s3_resource = boto3.resource('s3')
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'ThingspeakDaily/thingspeak_20{}{}{:02}.parquet'.format(yr, month, day)).Acl().put(ACL='public-read')
 

@@ -134,6 +134,8 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
             combined_df['variable_wind_info'] = None
             combined_df['sys_maint_reqd'] = False
 
+        # Only outside sensors
+        combined_df = combined_df[combined_df.device_loc_typ == 'outside']
     #     # Write to file
     #     parquet_file = "{0}/combined_interpolated/20{3}{1}{2:02}.parquet".format(datafolder, month, day, yr)
     #     write(parquet_file, combined_df,compression='GZIP')
@@ -141,7 +143,7 @@ def combineData(noaa_df, epa_df, bay_ts_df, month, day, yr):
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
         s3_resource = boto3.resource('s3')
-        write('midscapstone-whos-polluting-my-air/CombinedDailyInterpolated/20{2}{0}{1:02}.parquet'.format(month, day, yr), combined_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/CombinedDailyInterpolated/20{2}{0}{1:02}.parquet'.format(month, day, yr), combined_df, compression='GZIP', open_with=myopen)
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedDailyInterpolated/20{2}{0}{1:02}.parquet'.format(month, day, yr)).Acl().put(ACL='public-read')
         return combined_df
     except Exception as e:
@@ -167,7 +169,7 @@ def addToMonthly(df, month, year):
         df = df[df['2_5um'].notna()]
         df = df[df.sys_maint_reqd != 1]
         df = df[df.high_reading_flag != 1]
-        df = df[df.device_loc_typ == 'outside']
+        # df = df[df.device_loc_typ == 'outside']
 
         df['wkday'] = df['created_at'].apply(lambda x: datetime.datetime.strptime(x,"%Y/%m/%dT%H:%M").strftime("%w"))
         df['daytype'] = df['wkday'].apply(lambda x: 'Weekend' if x in ('0','6') else 'Weekday')
@@ -213,7 +215,7 @@ def addToMonthly(df, month, year):
         s3 = s3fs.S3FileSystem()
         myopen = s3.open
         s3_resource = boto3.resource('s3')
-        write('midscapstone-whos-polluting-my-air/CombinedMonthly/{}{}.parquet'.format(yr, mth), month_df, open_with=myopen)
+        write('midscapstone-whos-polluting-my-air/CombinedMonthly/{}{}.parquet'.format(yr, mth), month_df, compression='GZIP', open_with=myopen)
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}{}.parquet'.format(yr, mth)).Acl().put(ACL='public-read')
     except Exception as e:
         print("*** EXCEPTION IN MONTHLY DATA *** {}".format(e))

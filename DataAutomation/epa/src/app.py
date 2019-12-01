@@ -116,6 +116,6 @@ def handler(event, context):
 
     # save
     print("*** WRITE TO S3 ***")
-    write('midscapstone-whos-polluting-my-air/EpaRaw/epa_{}.parquet'.format(current_month), month_df, open_with=myopen)
+    write('midscapstone-whos-polluting-my-air/EpaRaw/epa_{}.parquet'.format(current_month), month_df, compression='GZIP', open_with=myopen)
     print("*** MAKE FILE PUBLIC ***")
     s3_resource.Object('midscapstone-whos-polluting-my-air', 'EpaRaw/epa_{}.parquet'.format(current_month)).Acl().put(ACL='public-read')
