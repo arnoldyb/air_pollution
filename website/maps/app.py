@@ -1,13 +1,11 @@
 #/usr/bin/env Python3
 
-import sys
-import os
 import re
 import pandas as pd
+import numpy as np
 import s3fs
 import boto3
 import botocore
-import random, json
 from datetime import datetime, timedelta
 from fastparquet import ParquetFile
 from sklearn import preprocessing
@@ -16,6 +14,18 @@ from flask_jsglue import JSGlue
 
 app = Flask(__name__)
 JSGlue(app)
+
+
+def distance(point1, point2):
+    '''
+    take two lat/lon pairs and calculate the Euclidean distance between them. There is probably a function to do this,
+    but I didn't have internet at the time
+    :param point1: tuple
+    :param point2: tuple
+    :return: distance: float
+    '''
+    return np.sqrt((point1[0]-point2[0])**2 + (point1[1]-point2[1])**2)
+
 
 @app.route('/')
 def output():
@@ -69,7 +79,6 @@ def output():
         obj = s3.get_object(Bucket=bucket, Key='UtilFiles/preds_loneliness.csv')
         df_predictions = pd.read_csv(obj['Body'])
     df_predictions.drop(['xy_'], axis=1, inplace=True)
-    # df_predictions[['lat', 'lon']] = df[['lat', 'lon']].apply(pd.to_numeric)
 
     # normalize predictions
     min_max_scaler = preprocessing.MinMaxScaler()
@@ -86,10 +95,10 @@ def output():
     loneliness_weight = 1
     df_predictions['score'] = loneliness_weight * df_predictions['preds_normalized'] + \
                               (1 - loneliness_weight) * df_predictions['lonely_factor_normalized']
-    print(df_predictions.head(), flush=True)
 
     # serve index template
     return render_template('index.html')
+
 
 @app.route("/update")
 def update():
@@ -153,27 +162,68 @@ def update():
 
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
-
     # explode northeast corner into two variables
     (ne_lat, ne_lng) = [float(s) for s in request.args.get("ne").split(",")]
 
-    # load predictions and select recommendations
-    loc_lst = []
-    # try:
     # filter by current bounding box
     df_filtered = df_predictions[(df_predictions.lat > sw_lat) & (df_predictions.lat < ne_lat) &
                                  (df_predictions.lon > sw_lng) & (df_predictions.lon < ne_lng)]
     df_filtered.reset_index(inplace=True, drop=True)
-    print(df_filtered.head(), flush=True)
 
-    # sort and select top candidates
+    # sort
     df_sorted = df_filtered.sort_values(by='score', ascending=False)
-    top_lat = df_sorted.head(q).lat.tolist()
-    top_lon = df_sorted.head(q).lon.tolist()
-    loc_lst = list(zip(top_lat, top_lon))
-    #     print("*** LOCATION ***: {}".format(loc_lst))
-    # except Exception as e:
-    #     print("*** EXCEPTION IN GET ADDRESS: {}".format(e), flush=True)
+    df_sorted.reset_index(inplace=True, drop=True)
+
+    # if we don't have enough grid points, just return them all to the user
+    if len(df_sorted.index) <= q:
+        top_lat = df_sorted.lat.tolist()
+        top_lon = df_sorted.lon.tolist()
+        loc_lst = list(zip(top_lat, top_lon))
+    else:
+        # select top candidates
+        force_spacing = True
+        if force_spacing:
+            # enforce a minimum spacing as locations are chosen one-by-one and subsequent recommendations don't update
+            # based on earlier recommendations. .02 is an aesthetically pleasing minimum spacing at the default zoom
+            # level. We could consider making defining it based on SME input for how close they would realistically
+            # place any two sensors.
+
+            min_spacing = .02
+            candidate_index = 0
+            current_choices = pd.DataFrame(columns=df_sorted.columns)
+            last_index = len(df_sorted.index)
+            # until we have enough selections
+            while len(current_choices.index) < q:
+                if candidate_index > last_index - 1:
+                    print("ran out of candidates, decreasing spacing", flush=True)
+                    min_spacing /= 2
+                    candidate_index = min(df_sorted.index)
+                    continue
+                # get candidate as lat lon tuple
+                candidate = (df_sorted.lat.loc[candidate_index], df_sorted.lon.loc[candidate_index])
+                append = True
+                for already_chosen_index in current_choices.index:
+                    # compare to already chosen locations as lat lon tuple
+                    already_chosen = current_choices.lat.loc[already_chosen_index],\
+                                     current_choices.lon.loc[already_chosen_index]
+                    if distance(candidate, already_chosen) < min_spacing:
+                        # not a good candidate, too close to an existing sensor
+                        append = False
+                        break
+                if append:
+                    # a valid candidate, add to recommendations and drop from available choices
+                    current_choices = current_choices.append(df_sorted.loc[candidate_index])
+                    df_sorted.drop(index=candidate_index)
+                candidate_index += 1
+
+            top_lat = current_choices.head(q).lat.tolist()
+            top_lon = current_choices.head(q).lon.tolist()
+            loc_lst = list(zip(top_lat, top_lon))
+        else:
+            # if no minimum spacing constraint, just choose top n regardless of spacing
+            top_lat = df_sorted.head(q).lat.tolist()
+            top_lon = df_sorted.head(q).lon.tolist()
+            loc_lst = list(zip(top_lat, top_lon))
 
     location_json = {
         "recommendations": loc_lst,
