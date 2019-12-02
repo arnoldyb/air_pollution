@@ -67,7 +67,6 @@ function addMarker(place, type)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
-    mCount += 1;
     console.log("Count2", mCount);
     console.log(place[0], place[1]);
     if (type == "recommendation") {
@@ -270,6 +269,7 @@ function update()
        // add new recommendations to map
        for (var i = 0; i < data.recommendations.length; i++)
        {
+           mCount += 1;
            addMarker(data.recommendations[i], "recommendation");
        }
 
