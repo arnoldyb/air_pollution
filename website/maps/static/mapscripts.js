@@ -195,7 +195,9 @@ function configure()
  */
 function removeMarkers()
 {
-    // delete each marker
+   // reset counter
+   mCount = 0;
+   // delete each marker
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
     }
