@@ -83,6 +83,8 @@ def output():
     # normalize predictions
     min_max_scaler = preprocessing.MinMaxScaler()
     preds = df_predictions[['preds']].values.astype(float)
+    preds_log = np.log(list(preds))
+    df_predictions['preds_log'] = preds_log
     preds_normalized = min_max_scaler.fit_transform(preds)
     df_predictions['preds_normalized'] = preds_normalized
 
@@ -141,6 +143,15 @@ def update():
     else:
         print("Error in toggle_polluters", toggle_polluters)
 
+    # Check if we need to display heatmap
+    toggle_heatmap = request.args.get("toggle_heatmap")
+    if toggle_heatmap == 'false':
+        toggle_heatmap = False
+    elif toggle_heatmap == 'true':
+        toggle_heatmap = True
+    else:
+        print("Error in toggle_heatmap", toggle_heatmap)
+
     if toggle_existing:
         existing_lat = unique_sensor_df.lat.tolist()
         existing_lon = unique_sensor_df.lon.tolist()
@@ -159,7 +170,7 @@ def update():
         polluter_lst = list(zip(polluter_lat, polluter_lon, polluter_name, polluter_street, polluter_city, polluter_pm))
     else:
         polluter_lst = []
-
+        
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
     # explode northeast corner into two variables
@@ -170,6 +181,14 @@ def update():
                                  (df_predictions.lon > sw_lng) & (df_predictions.lon < ne_lng)]
     df_filtered.reset_index(inplace=True, drop=True)
 
+    if toggle_heatmap:
+        heatmap_lat = df_filtered.lat.tolist()
+        heatmap_lon = df_filtered.lon.tolist()
+        heatmap_pred = df_filtered.preds_log.tolist()
+        heatmap_lst = list(zip(heatmap_lat, heatmap_lon, heatmap_pred))
+    else:
+        heatmap_lst = []
+        
     # sort
     df_sorted = df_filtered.sort_values(by='score', ascending=False)
     df_sorted.reset_index(inplace=True, drop=True)
@@ -217,7 +236,7 @@ def update():
                 candidate_index += 1
 
             top_lat = current_choices.head(q).lat.tolist()
-            top_lon = current_choices.head(q).lon.tolist()
+            top_lon = current_choices.head(q).lon.tolist()            
             loc_lst = list(zip(top_lat, top_lon))
         else:
             # if no minimum spacing constraint, just choose top n regardless of spacing
@@ -228,7 +247,8 @@ def update():
     location_json = {
         "recommendations": loc_lst,
         "existing": existing_lst,
-        "polluters": polluter_lst
+        "polluters": polluter_lst,
+        "heatmappy": heatmap_lst
     }
     return jsonify(location_json)
 

@@ -258,7 +258,7 @@ function update()
         sw: sw.lat() + "," + sw.lng(),
         toggle_existing: $("#toggle_existing").is(":checked"),
         toggle_polluters: $("#toggle_polluters").is(":checked"),
-
+        toggle_heatmap: $("#toggle_heatmap").is(":checked")
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
@@ -286,10 +286,15 @@ function update()
        }
 
        // create heatmap
+       
        if (toggle_heatmap)
        {
+         var zoom_factor = map.getZoom();
+         var rad = 0.00415039062 * (2 ** zoom_factor); // basically, you want default zoom of 13 to have a radius of about 34
+         
          heatmap = new google.maps.visualization.HeatmapLayer({
-               data: getPoints(),
+               data: getPoints(data.heatmappy),
+               radius: rad,
                map: map
              });
        }
@@ -302,17 +307,14 @@ function update()
 };
 
 // data points for heatmap
-function getPoints() {
-        return [
-          new google.maps.LatLng(37.782, -122.447),
-          new google.maps.LatLng(37.782, -122.443),
-          new google.maps.LatLng(37.782, -122.441),
-          new google.maps.LatLng(37.782, -122.439),
-          new google.maps.LatLng(37.782, -122.435),
-          new google.maps.LatLng(37.785, -122.447),
-          new google.maps.LatLng(37.785, -122.445),
-          new google.maps.LatLng(37.785, -122.441),
-          new google.maps.LatLng(37.785, -122.437),
-          new google.maps.LatLng(37.785, -122.435),
-        ];
+function getPoints(heat_list) {
+        
+        var heat_points = [];
+        for (var i = 0; i < heat_list.length; i++)
+        {
+            //heat_points.push(new google.maps.LatLng(heat_list[i][0], heat_list[i][1]));
+            heat_points.push({location: new google.maps.LatLng(heat_list[i][0], heat_list[i][1]), weight: heat_list[i][2]});
+        }
+        
+        return heat_points;
       }
