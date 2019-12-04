@@ -75,8 +75,8 @@ function addMarker(place, type)
             '<div id="siteNotice">'+
             '</div>'+
             '<div id="bodyContent">'+
-            '<p><b>Latitude: </b>' + place[0] + '</p>'+
-            '<p><b>Longitude: </b>' + place[1] + '</p>'+
+            '<p><b>Latitude: </b>' + place[0].toFixed(3) + '</p>'+
+            '<p><b>Longitude: </b>' + place[1].toFixed(3) + '</p>'+
             '</div>'+
             '</div>',
         titleString = "Sensor " + mCount.toString(),
@@ -288,12 +288,12 @@ function update()
        }
 
        // create heatmap
-       
+
        if (toggle_heatmap)
        {
          var zoom_factor = map.getZoom();
          var rad = 0.00415039062 * (2 ** zoom_factor); // basically, you want default zoom of 13 to have a radius of about 34
-         
+
          heatmap = new google.maps.visualization.HeatmapLayer({
                data: getPoints(data.heatmappy),
                radius: rad,
@@ -310,13 +310,13 @@ function update()
 
 // data points for heatmap
 function getPoints(heat_list) {
-        
+
         var heat_points = [];
         for (var i = 0; i < heat_list.length; i++)
         {
             //heat_points.push(new google.maps.LatLng(heat_list[i][0], heat_list[i][1]));
             heat_points.push({location: new google.maps.LatLng(heat_list[i][0], heat_list[i][1]), weight: heat_list[i][2]});
         }
-        
+
         return heat_points;
       }
