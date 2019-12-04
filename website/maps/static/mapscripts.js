@@ -55,6 +55,60 @@ $(function() {
     heatmap = new google.maps.visualization.HeatmapLayer({
         });
 
+    // // Add bounding box
+    // var rectangle = new google.maps.Rectangle({
+    //       strokeColor: '#ff4000',
+    //       strokeOpacity: 0.8,
+    //       strokeWeight: 2,
+    //       // fillColor: '#A9A9A9',
+    //       fillOpacity: 0.005,
+    //       map: map,
+    //       bounds: {
+    //         north: 38.008050,
+    //         south: 37.701933,
+    //         east: -122.186437,
+    //         west: -122.536985
+    //           // north: 38.063446,
+    //           // south: 37.2781261,
+    //           // east: -121.814281,
+    //           // west: -122.683496
+    //       }
+    //     });
+
+    var outerCoords = [
+      new google.maps.LatLng(85, 180),
+      new google.maps.LatLng(85, 90),
+      new google.maps.LatLng(85, 0),
+      new google.maps.LatLng(85, -90),
+      new google.maps.LatLng(85, -180),
+      new google.maps.LatLng(0, -180),
+      new google.maps.LatLng(-85, -180),
+      new google.maps.LatLng(-85, -90),
+      new google.maps.LatLng(-85, 0),
+      new google.maps.LatLng(-85, 90),
+      new google.maps.LatLng(-85, 180),
+      new google.maps.LatLng(0, 180),
+      new google.maps.LatLng(85, 180)
+    ];
+
+    var innerCoords = [
+      {lat: 38.008050, lng: -122.536985},
+      {lat: 38.008050, lng: -122.186437},
+      {lat: 37.701933, lng: -122.186437},
+      {lat: 37.701933, lng: -122.536985}
+    ];
+
+    // Construct the polygon, including both paths.
+    var boundingBox = new google.maps.Polygon({
+      paths: [outerCoords, innerCoords],
+      strokeColor: '#808080',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#b380ff',
+      fillOpacity: 0.35
+    });
+    boundingBox.setMap(map);
+
     // configure UI once Google Map is idle (i.e., loaded)
     google.maps.event.addListenerOnce(map, "idle", configure);
 
