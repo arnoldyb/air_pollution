@@ -29,6 +29,12 @@ def distance(point1, point2):
 
 @app.route('/')
 def output():
+    # define bounding box
+    min_lat = 37.701933
+    max_lat = 38.008050
+    max_lon = -122.186437
+    min_lon = -122.536985
+
     # load existing sensor network
     try:
         # load from local instance
@@ -51,11 +57,18 @@ def output():
                 break
             except botocore.exceptions.ClientError:
                 file_date = file_date - timedelta(days=1)
-    global unique_sensor_df
+    global existing_lst_full
     unique_sensor_df = df.drop_duplicates(subset="sensor_id")
+    unique_sensor_df = unique_sensor_df[(unique_sensor_df.lat > min_lat) & (unique_sensor_df.lat < max_lat) &
+                                 (unique_sensor_df.lon > min_lon) & (unique_sensor_df.lon < max_lon)]
+    unique_sensor_df.reset_index(inplace=True, drop=True)
+    existing_lat = unique_sensor_df.lat.tolist()
+    existing_lon = unique_sensor_df.lon.tolist()
+    existing_name = unique_sensor_df.sensor_name.tolist()
+    existing_lst_full = list(zip(existing_lat, existing_lon, existing_name))
 
     # load polluters
-    global polluter_df
+    global polluter_lst_full
     try:
         print("Looking for polluter file locally.", flush=True)
         polluter_df = pd.read_csv("./polluters.csv")
@@ -65,6 +78,16 @@ def output():
         s3 = boto3.client('s3')
         obj = s3.get_object(Bucket=bucket, Key='UtilFiles/polluters.csv')
         polluter_df = pd.read_csv(obj['Body'])
+    polluter_df = polluter_df[(polluter_df.Lat > min_lat) & (polluter_df.Lat < max_lat) &
+                                 (polluter_df.Lon > min_lon) & (polluter_df.Lon < max_lon)]
+    polluter_df.reset_index(inplace=True, drop=True)
+    polluter_lat = polluter_df.Lat.tolist()
+    polluter_lon = polluter_df.Lon.tolist()
+    polluter_name = polluter_df.Name.tolist()
+    polluter_street = polluter_df.Street.tolist()
+    polluter_city = polluter_df.City.tolist()
+    polluter_pm = polluter_df.PM.tolist()
+    polluter_lst_full = list(zip(polluter_lat, polluter_lon, polluter_name, polluter_street, polluter_city, polluter_pm))
 
     # Load predictions
     global df_predictions
@@ -153,21 +176,12 @@ def update():
         print("Error in toggle_heatmap", toggle_heatmap)
 
     if toggle_existing:
-        existing_lat = unique_sensor_df.lat.tolist()
-        existing_lon = unique_sensor_df.lon.tolist()
-        existing_name = unique_sensor_df.sensor_name.tolist()
-        existing_lst = list(zip(existing_lat, existing_lon, existing_name))
+        existing_lst = existing_lst_full
     else:
         existing_lst = []
 
     if toggle_polluters:
-        polluter_lat = polluter_df.Lat.tolist()
-        polluter_lon = polluter_df.Lon.tolist()
-        polluter_name = polluter_df.Name.tolist()
-        polluter_street = polluter_df.Street.tolist()
-        polluter_city = polluter_df.City.tolist()
-        polluter_pm = polluter_df.PM.tolist()
-        polluter_lst = list(zip(polluter_lat, polluter_lon, polluter_name, polluter_street, polluter_city, polluter_pm))
+        polluter_lst = polluter_lst_full
     else:
         polluter_lst = []
         
