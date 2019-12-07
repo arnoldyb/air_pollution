@@ -39,20 +39,21 @@
         <p id="mapinstr">
             <b> Instructions: </b> <br>
             <b> 1) Enter number of sensors to place </b> <br>
-            <b> 2) Pan and zoom to neighborhood of interest </b> <br>
-            <b> 3) Optimal sensor locations will be displayed. </b> <br>
+            <b> 2) Pan, zoom to area of interest </b> <br>
+            <b> 3) Green pin marks optimal location </b> <br>
+			<b> 4) For more info, check boxes, show </b> <br>
         </p>
         <!-- http://getbootstrap.com/css/#forms -->
         <form id="form">
             <div class="form-group">
               <div id="spinner">
-                <label for="q">Number of Sensors:</label>
+                <label for="q">New Sensors:</label>
                 <input class="form-control" id="q" type="number" name="quantity" min="1" max="50" value="5">
               </div>
-                <div><input type="checkbox" id="toggle_existing" name="toggle_existing"> Show existing sensors</div>
-                <div><input type="checkbox" id="toggle_polluters" name="toggle_polluters"> Show registered polluters</div>
-                <div><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Show heatmap</div>
-                <div class="btnsub"><input type="submit" id="btnsub" value="Update" /></div>
+                <div><input type="checkbox" id="toggle_existing" name="toggle_existing" title="Recommended placements based on pollution prediction and sparsity of sensors"> Existing sensors</div>
+                <div><input type="checkbox" id="toggle_polluters" name="toggle_polluters" title="Existing network of PurpleAir.com sensors"> Registered polluters</div>
+                <div><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap" title="FairAir's predicted pollution over past 7 days. Greener is cleaner."> Predicted pollution</div>
+                <div class="btnsub"><input type="submit" id="btnsub" value="Show" /></div>
             </div>
         </form>
     </div>
