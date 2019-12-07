@@ -148,24 +148,6 @@ def update():
     else:
         q = int(request.args.get("q"))
 
-    # Check if we need to display existing sensors
-    toggle_existing = request.args.get("toggle_existing")
-    if toggle_existing == 'false':
-        toggle_existing = False
-    elif toggle_existing == 'true':
-        toggle_existing = True
-    else:
-        print("Error in toggle_existing", toggle_existing)
-
-    # Check if we need to display polluters
-    toggle_polluters = request.args.get("toggle_polluters")
-    if toggle_polluters == 'false':
-        toggle_polluters = False
-    elif toggle_polluters == 'true':
-        toggle_polluters = True
-    else:
-        print("Error in toggle_polluters", toggle_polluters)
-
     # Check if we need to display heatmap
     toggle_heatmap = request.args.get("toggle_heatmap")
     if toggle_heatmap == 'false':
@@ -175,16 +157,6 @@ def update():
     else:
         print("Error in toggle_heatmap", toggle_heatmap)
 
-    if toggle_existing:
-        existing_lst = existing_lst_full
-    else:
-        existing_lst = []
-
-    if toggle_polluters:
-        polluter_lst = polluter_lst_full
-    else:
-        polluter_lst = []
-        
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
     # explode northeast corner into two variables
@@ -202,7 +174,7 @@ def update():
         heatmap_lst = list(zip(heatmap_lat, heatmap_lon, heatmap_pred))
     else:
         heatmap_lst = []
-        
+
     # sort
     df_sorted = df_filtered.sort_values(by='score', ascending=False)
     df_sorted.reset_index(inplace=True, drop=True)
@@ -250,7 +222,7 @@ def update():
                 candidate_index += 1
 
             top_lat = current_choices.head(q).lat.tolist()
-            top_lon = current_choices.head(q).lon.tolist()            
+            top_lon = current_choices.head(q).lon.tolist()
             loc_lst = list(zip(top_lat, top_lon))
         else:
             # if no minimum spacing constraint, just choose top n regardless of spacing
@@ -260,11 +232,22 @@ def update():
 
     location_json = {
         "recommendations": loc_lst,
-        "existing": existing_lst,
-        "polluters": polluter_lst,
         "heatmappy": heatmap_lst
     }
     return jsonify(location_json)
+
+@app.route("/getstaticmarkers")
+def getstaticmarkers():
+    """Find lat lon for existing sensors and polluters."""
+
+    existing_lst = existing_lst_full
+    polluter_lst = polluter_lst_full
+
+    marker_json = {
+        "existing": existing_lst,
+        "polluters": polluter_lst
+    }
+    return jsonify(marker_json)
 
 if __name__ == '__main__':
     app.run("0.0.0.0", "8083")

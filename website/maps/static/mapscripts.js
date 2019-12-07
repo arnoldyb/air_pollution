@@ -2,13 +2,22 @@
 var map, heatmap;
 
 // markers for map
-var markers = [];
+var recMarkers = [];    // recommendation markers
+var sensMarkers = [];   // existing sensor markers
+var pollMarkers = [];   // polluter markers
 
 // info window
 var info = new google.maps.InfoWindow();
 
 // marker counter
-mCount = 0;
+var mCount = 0;
+
+// marker Order
+var vzIndex = 1;
+
+//toggle variables
+var toggle_existing = "false";
+var toggle_polluters = "false";
 
 // execute when the DOM is fully loaded
 $(function() {
@@ -121,8 +130,8 @@ function addMarker(place, type)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
-    console.log("Count2", mCount);
-    console.log(place[0], place[1]);
+    // console.log("Count2", mCount);
+    // console.log(place[0], place[1]);
     if (type == "recommendation") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
         contentString = '<div id="content">'+
@@ -134,7 +143,8 @@ function addMarker(place, type)
             '</div>'+
             '</div>',
         titleString = "Sensor " + mCount.toString(),
-        labelString = mCount.toString()
+        labelString = mCount.toString(),
+        vzIndex = 10
     }
     if (type == "existing") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/blu-blank.png",
@@ -148,7 +158,8 @@ function addMarker(place, type)
             '</div>'+
             '</div>',
         titleString = place[2],
-        labelString = " "
+        labelString = " ",
+        vzIndex = 1
     }
     if (type == "polluter") {
         icon_path = "http://maps.google.com/mapfiles/kml/shapes/caution.png",
@@ -165,7 +176,8 @@ function addMarker(place, type)
             '</div>'+
             '</div>',
         titleString = place[2],
-        labelString = " "
+        labelString = " ",
+        vzIndex = 1
     }
 
     // Info for clicks
@@ -192,15 +204,28 @@ function addMarker(place, type)
                   // fontSize: "16px",
                   fontWeight: "bold"
                 },
-        title: titleString
+        title: titleString,
+        zIndex: vzIndex
     });
     marker.addListener('click', function() {
       infowindow.open(map, marker);
     });
 
     //remember marker for later
-    markers.push(marker);
-    marker.setMap(map);
+    // markers.push(marker);
+    // marker.setMap(map);
+    if (type == "recommendation") {
+        recMarkers.push(marker);
+        marker.setMap(map);
+    }
+    if (type == "existing") {
+        sensMarkers.push(marker);
+        marker.setMap(null);
+    }
+    if (type == "polluter") {
+        pollMarkers.push(marker);
+        marker.setMap(null);
+    }
 }
 
 /**
@@ -240,6 +265,9 @@ function configure()
     // update UI
     update();
 
+    // creates arrays for existing sensors and polluters
+    createStaticMarkerArrays();
+
     // give focus to text box
     $("#q").focus();
 }
@@ -252,11 +280,17 @@ function removeMarkers()
    // reset counter
    mCount = 0;
    // delete each marker
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+    for (var i = 0; i < recMarkers.length; i++) {
+        recMarkers[i].setMap(null);
+    }
+    for (var i = 0; i < sensMarkers.length; i++) {
+        sensMarkers[i].setMap(null);
+    }
+    for (var i = 0; i < pollMarkers.length; i++) {
+        pollMarkers[i].setMap(null);
     }
     // reset markers
-    markers = [];
+    recMarkers = [];
 
     // reset heatmap
     heatmap.setMap(null);
@@ -266,29 +300,29 @@ function removeMarkers()
 /**
  * Shows info window at marker with content.
  */
-function showInfo(marker, content)
-{
-    // start div
-    var div = "<div id='info'>";
-    if (typeof(content) == "undefined")
-    {
-        // http://www.ajaxload.info/
-        div += "<img alt='loading' src='/static/ajax-loader.gif'/>";
-    }
-    else
-    {
-        div += content;
-    }
-
-    // end div
-    div += "</div>";
-
-    // set info window's content
-    info.setContent(div);
-
-    // open info window (if not already open)
-    info.open(map, marker);
-}
+// function showInfo(marker, content)
+// {
+//     // start div
+//     var div = "<div id='info'>";
+//     if (typeof(content) == "undefined")
+//     {
+//         // http://www.ajaxload.info/
+//         div += "<img alt='loading' src='/static/ajax-loader.gif'/>";
+//     }
+//     else
+//     {
+//         div += content;
+//     }
+//
+//     // end div
+//     div += "</div>";
+//
+//     // set info window's content
+//     info.setContent(div);
+//
+//     // open info window (if not already open)
+//     info.open(map, marker);
+// }
 
 
 /**
@@ -312,8 +346,6 @@ function update()
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
         sw: sw.lat() + "," + sw.lng(),
-        toggle_existing: $("#toggle_existing").is(":checked"),
-        toggle_polluters: $("#toggle_polluters").is(":checked"),
         toggle_heatmap: $("#toggle_heatmap").is(":checked")
     };
     $.getJSON(Flask.url_for("update"), parameters)
@@ -330,15 +362,23 @@ function update()
        }
 
         // add existing sensor network to map (if toggled on)
-       for (var i = 0; i < data.existing.length; i++)
-       {
-           addMarker(data.existing[i], "existing");
-       }
+        toggle_existing = $("#toggle_existing").is(":checked")
+        console.log("Existing Toggle", toggle_existing)
+        if (toggle_existing) {
+          console.log("in existing");
+          for (var i = 0; i < sensMarkers.length; i++) {
+              sensMarkers[i].setMap(map);
+          }
+        }
 
        // add polluters to map (if toggled on)
-       for (var i = 0; i < data.polluters.length; i++)
-       {
-           addMarker(data.polluters[i], "polluter");
+       toggle_polluters = $("#toggle_polluters").is(":checked")
+       console.log("Polluter Toggle", toggle_polluters)
+       if (toggle_polluters) {
+         console.log("in polluters");
+         for (var i = 0; i < pollMarkers.length; i++) {
+             pollMarkers[i].setMap(map);
+         }
        }
 
        // create heatmap
@@ -353,6 +393,33 @@ function update()
                radius: rad,
                map: map
              });
+       }
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+
+        // log error to browser's console
+        console.log(errorThrown.toString());
+    });
+};
+
+/**
+ * Creates marker arrays for existing sensors and polluters
+ */
+function createStaticMarkerArrays()
+{
+    $.getJSON(Flask.url_for("getstaticmarkers"))
+    .done(function(data, textStatus, jqXHR) {
+
+       // add existing sensor network to map (if toggled on)
+       for (var i = 0; i < data.existing.length; i++)
+       {
+           addMarker(data.existing[i], "existing");
+       }
+
+       // add polluters to map (if toggled on)
+       for (var i = 0; i < data.polluters.length; i++)
+       {
+           addMarker(data.polluters[i], "polluter");
        }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
