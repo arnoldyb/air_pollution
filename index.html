@@ -16,7 +16,7 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#background">About</a></li>
                 <li><a href="#approach">Uses</a></li>
-				<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
+				<!--<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>-->
                 <li><a href="#model">Model</a></li>
                 <li><a href="#helpout">Support</a></li>
                 <li><a href="#team">Team</a></li>
@@ -29,7 +29,7 @@
             <div class="overlay">
                 <h1 class="coverTitle">FairAir</h1>
                 <p class="coverCaption">Filling the gaps in air pollution monitoring</p>
-                <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button id="coverBtn">Try Demo</button></a>
+                <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button id="coverBtn">See the Map</button></a>
             </div>
 
             <p class="picCredit">Photo by Ren Ren on Unsplash</p>
@@ -45,13 +45,13 @@
 			and residents are starting to buy their own from companies like PurpleAir.com. So far, most sensors wind
 			up in wealthier neighborhoods that face less pollution. Our tool aims to change this.
 		</p>
+		<h2 class="introGrab">FairAir predicts which areas on a map face the most air pollution and recommends the best place
+			to put new sensors.</h2>
 		<p class="introDetails">
-			<b>FairAir predicts which areas on a map face the most air pollution and recommends the best place
-			to put new sensors.</b>
-		</p>
-		<p class="introDetails">
-			Optimal placement of sensors ensures disadvantaged communities have access to air quality data, improves air
-			quality models for everyone, and saves money from being wasted on redundant sensors.
+			Optimal placement of sensors ensures: <br>
+			* disadvantaged communities have access to air quality data, <br>
+			* improves air quality models for everyone,<br>
+			* saves money from being wasted on redundant sensors.<br>
 		</p>
     </section>
 
@@ -86,7 +86,7 @@
             </div>
         </div>
     </section>
-
+<!--
     <section id="demo">
         <h1 class="introTitle">Demo</h1>
         <div class="demoContainer">
@@ -96,14 +96,14 @@
 			</center>
 		</div>
     </section>
-
+-->
     <section id="model">
         <h1 class="approachTitle">How It Works</h1>
         <p class="modelDetails">
-		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines hourly air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. Additionally, our model accounts for static features such as topography and land use.
+		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines hourly air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. The model also accounts for topography and land use.
 		</p>
 		<p class="modelDetails">
-		The model focuses on one specific type of air pollution: particulate matter that is 2.5 micrometers in diameter, commonly referred to as PM2.5. Pollution particles this small can move deeply into human lungs. Research has linked PM2.5 exposure to many health problems, including asthma, irregular heartbeat, nonfatal heart attacks, and premature death.
+		The model focuses on one specific type of air pollution: particulate matter that is 2.5 micrometers in diameter, <a href="https://www.nytimes.com/interactive/2019/12/02/climate/air-pollution-compare-ar-ul.html">commonly referred to as PM2.5</a>. Pollution particles this small can move deeply into human lungs. Research has linked PM2.5 exposure to <a href="https://www.epa.gov/pm-pollution/health-and-environmental-effects-particulate-matter-pm">many health problems</a>, including asthma, irregular heartbeat, nonfatal heart attacks, and premature death.
 		</p>
 		<p class="modelDetails">
 		FairAir predicts hourly PM2.5 levels at intervals of 500 meters on a regional grid. Each gridpoint is then scored on two factors: its average predicted PM2.5 level over the past seven days and the number of existing sensors in its vicinity. The user is then shown locations where both sensor coverage is sparse and predicted PM2.5 is high. Adding real-life sensors to such  areas would not only provide real-time air quality readings but also improve the accuracy of our model, which includes actual neighbor PM2.5 values as features.

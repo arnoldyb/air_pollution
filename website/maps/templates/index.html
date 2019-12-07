@@ -27,7 +27,7 @@
                 <li><a id="home" href="https://fairair.netlify.com/#home">Home</a></li>
                 <li><a href="https://fairair.netlify.com/#background">About</a></li>
                 <li><a href="https://fairair.netlify.com/#approach">Uses</a></li>
-                <li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>
+                <!--<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>-->
                 <li><a href="https://fairair.netlify.com/#model">Model</a></li>
                 <li><a href="https://fairair.netlify.com/#helpout">Support</a></li>
                 <li><a href="https://fairair.netlify.com/#team">Team</a></li>
@@ -38,10 +38,13 @@
 
         <p id="mapinstr">
             <b> Instructions: </b> <br>
-            <b> 1) Enter number of sensors to place </b> <br>
+            <b> 1) Set number of sensors to place </b> <br>
             <b> 2) Pan, zoom to area of interest </b> <br>
             <b> 3) Pins mark <a title="Calculation balances highest predicted pollution with greatest sparsity of sensors">optimal location</a> </b> <br>
-			<b> 4) For more info, check boxes, show </b> <br>
+			<b> 4) For more info: </b> <br>
+			<b>    * check boxes, click show </b> <br>
+			<b>    * hover over sidebar text </b> <br>
+			<b>    * click icons on map </b> 
         </p>
         <!-- http://getbootstrap.com/css/#forms -->
         <form id="form">
@@ -51,9 +54,9 @@
                 <label for="q" title="Enter how many sensors you want to place">New Sensors:</label>
                 <input class="form-control" id="q" type="number" name="quantity" min="1" max="50" value="5">
               </div>
-                <div title="Existing network of PurpleAir.com sensors"><img src="https://maps.google.com/mapfiles/kml/paddle/blu-blank.png"  class="icon"><input type="checkbox" id="toggle_existing" name="toggle_existing"> Existing sensors</div>
+                <div title="Existing network of PurpleAir.com sensors"><img src="https://maps.google.com/mapfiles/kml/paddle/blu-blank.png" class="icon"><input type="checkbox" id="toggle_existing" name="toggle_existing"> Existing sensors</div>
                 <div title="Facilities reported to the California Air Resources Board in 2017 with estimated emissions of at least 1 ton of PM/year."><img src="https://maps.google.com/mapfiles/kml/shapes/caution.png"  class="icon"><input type="checkbox" id="toggle_polluters" name="toggle_polluters"> Registered polluters</div>
-                <div title="FairAir's predicted pollution over past 7 days. Greener is cleaner."><img src="/static/heatmap.png"  class="icon"><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Predicted pollution</div>
+                <div title="FairAir's predicted pollution over past 7 days. Greener is cleaner."><img src="/static/heatmap.png" class="icon"><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Predicted pollution</div>
                 <div class="btnsub"><input type="submit" id="btnsub" value="Show" /></div>
             </div>
         </form>
