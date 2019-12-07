@@ -40,20 +40,20 @@
             <b> Instructions: </b> <br>
             <b> 1) Enter number of sensors to place </b> <br>
             <b> 2) Pan, zoom to area of interest </b> <br>
-            <b> 3) Green pin marks <a title="Calculation balances highest predicted pollution with greatest sparsity of sensors">optimal location</a> </b> <br>
+            <b> 3) Pins mark <a title="Calculation balances highest predicted pollution with greatest sparsity of sensors">optimal location</a> </b> <br>
 			<b> 4) For more info, check boxes, show </b> <br>
         </p>
         <!-- http://getbootstrap.com/css/#forms -->
         <form id="form">
             <div class="form-group">
               <div id="spinner">
-				<img src="grn-blank.png" height=20 width=20 align=left>
+				<img src="http://maps.google.com/mapfiles/kml/paddle/grn-blank.png" height=20 width=20 align=left>
                 <label for="q" title="Enter how many sensors you want to place">New Sensors:</label>
                 <input class="form-control" id="q" type="number" name="quantity" min="1" max="50" value="5">
               </div>
-                <div title="Existing network of PurpleAir.com sensors"><img src="blu-blank.png" height=20 width=20 align=left><input type="checkbox" id="toggle_existing" name="toggle_existing"> Existing sensors</div>
-                <div title="Facilities reported to the California Air Resources Board in 2017 with estimated emissions of at least 1 ton of PM/year."><img src="caution.png" height=20 width=20 align=left><input type="checkbox" id="toggle_polluters" name="toggle_polluters"> Registered polluters</div>
-                <div title="FairAir's predicted pollution over past 7 days. Greener is cleaner."><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Predicted pollution</div>
+                <div title="Existing network of PurpleAir.com sensors"><img src="http://maps.google.com/mapfiles/kml/paddle/blu-blank.png" height=20 width=20 align=left><input type="checkbox" id="toggle_existing" name="toggle_existing"> Existing sensors</div>
+                <div title="Facilities reported to the California Air Resources Board in 2017 with estimated emissions of at least 1 ton of PM/year."><img src="http://maps.google.com/mapfiles/kml/shapes/caution.png" height=20 width=20 align=left><input type="checkbox" id="toggle_polluters" name="toggle_polluters"> Registered polluters</div>
+                <div title="FairAir's predicted pollution over past 7 days. Greener is cleaner."><img src="heatmap.png" height=20 width=20 align=left><input type="checkbox" id="toggle_heatmap" name="toggle_heatmap"> Predicted pollution</div>
                 <div class="btnsub"><input type="submit" id="btnsub" value="Show" /></div>
             </div>
         </form>
