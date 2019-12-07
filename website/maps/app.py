@@ -106,8 +106,6 @@ def output():
     # normalize predictions
     min_max_scaler = preprocessing.MinMaxScaler()
     preds = df_predictions[['preds']].values.astype(float)
-    preds_log = np.log(list(preds))
-    df_predictions['preds_log'] = preds_log
     preds_normalized = min_max_scaler.fit_transform(preds)
     df_predictions['preds_normalized'] = preds_normalized
 
@@ -120,6 +118,17 @@ def output():
     loneliness_weight = 1
     df_predictions['score'] = loneliness_weight * df_predictions['preds_normalized'] + \
                               (1 - loneliness_weight) * df_predictions['lonely_factor_normalized']
+
+    # prepare heatmap
+    global heatmap_lst_full
+    preds_log = np.log(list(preds))
+    df_predictions['preds_log'] = preds_log
+    df_predictions = df_predictions[(df_predictions.lat > min_lat) & (df_predictions.lat < max_lat) &
+                                 (df_predictions.lon > min_lon) & (df_predictions.lon < max_lon)]
+    heatmap_lat = df_predictions.lat.tolist()
+    heatmap_lon = df_predictions.lon.tolist()
+    heatmap_pred = df_predictions.preds_log.tolist()
+    heatmap_lst_full = list(zip(heatmap_lat, heatmap_lon, heatmap_pred))
 
     # serve index template
     return render_template('index.html')
@@ -134,7 +143,6 @@ def update():
         raise RuntimeError("missing sw")
     if not request.args.get("ne"):
         raise RuntimeError("missing ne")
-
 
     # ensure parameters are in lat,lng format
     if not re.search("^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?$", request.args.get("sw")):
@@ -168,10 +176,7 @@ def update():
     df_filtered.reset_index(inplace=True, drop=True)
 
     if toggle_heatmap:
-        heatmap_lat = df_filtered.lat.tolist()
-        heatmap_lon = df_filtered.lon.tolist()
-        heatmap_pred = df_filtered.preds_log.tolist()
-        heatmap_lst = list(zip(heatmap_lat, heatmap_lon, heatmap_pred))
+        heatmap_lst = heatmap_lst_full
     else:
         heatmap_lst = []
 

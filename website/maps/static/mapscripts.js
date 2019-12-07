@@ -62,7 +62,7 @@ $(function() {
 
     // instantiate heatmap
     heatmap = new google.maps.visualization.HeatmapLayer({
-        });
+    });
 
     // // Add bounding box
     // var rectangle = new google.maps.Rectangle({
@@ -130,8 +130,6 @@ function addMarker(place, type)
 {
     // where are we
     var myloc = new google.maps.LatLng(place[0], place[1]);
-    // console.log("Count2", mCount);
-    // console.log(place[0], place[1]);
     if (type == "recommendation") {
         icon_path = "http://maps.google.com/mapfiles/kml/paddle/grn-blank.png",
         contentString = '<div id="content">'+
@@ -195,8 +193,6 @@ function addMarker(place, type)
     var marker = new google.maps.Marker({
         position: myloc,
         map: map,
-        // label: mCount.toString(),
-//            icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
         icon: icon,
         label: {
                   text: labelString,
@@ -277,24 +273,36 @@ function configure()
  */
 function removeMarkers()
 {
-   // reset counter
-   mCount = 0;
-   // delete each marker
+    // reset counter
+    mCount = 0;
+
+    // delete each marker
     for (var i = 0; i < recMarkers.length; i++) {
         recMarkers[i].setMap(null);
     }
-    for (var i = 0; i < sensMarkers.length; i++) {
-        sensMarkers[i].setMap(null);
-    }
-    for (var i = 0; i < pollMarkers.length; i++) {
-        pollMarkers[i].setMap(null);
-    }
+
     // reset markers
     recMarkers = [];
 
     // reset heatmap
     heatmap.setMap(null);
 
+}
+
+function removeExisting()
+{
+   // delete existing sensors
+    for (var i = 0; i < sensMarkers.length; i++) {
+        sensMarkers[i].setMap(null);
+    }
+}
+
+function removePolluters()
+{
+   // delete polluters
+    for (var i = 0; i < pollMarkers.length; i++) {
+        pollMarkers[i].setMap(null);
+    }
 }
 
 /**
@@ -351,15 +359,15 @@ function update()
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
 
-       // remove old markers from map
-       removeMarkers();
+        // remove old markers from map
+        removeMarkers();
 
-       // add new recommendations to map
-       for (var i = 0; i < data.recommendations.length; i++)
-       {
-           mCount += 1;
-           addMarker(data.recommendations[i], "recommendation");
-       }
+        // add recommendations to map
+        for (var i = 0; i < data.recommendations.length; i++)
+        {
+            mCount += 1;
+            addMarker(data.recommendations[i], "recommendation");
+        }
 
         // add existing sensor network to map (if toggled on)
         toggle_existing = $("#toggle_existing").is(":checked")
@@ -369,6 +377,8 @@ function update()
           for (var i = 0; i < sensMarkers.length; i++) {
               sensMarkers[i].setMap(map);
           }
+        } else {
+            removeExisting();
         }
 
        // add polluters to map (if toggled on)
@@ -379,21 +389,23 @@ function update()
          for (var i = 0; i < pollMarkers.length; i++) {
              pollMarkers[i].setMap(map);
          }
+       } else {
+            removePolluters();
        }
 
        // create heatmap
 
-       if (toggle_heatmap)
-       {
-         var zoom_factor = map.getZoom();
-         var rad = 0.00415039062 * (2 ** zoom_factor); // basically, you want default zoom of 13 to have a radius of about 34
-
-         heatmap = new google.maps.visualization.HeatmapLayer({
+       if (toggle_heatmap) {
+           var zoom_factor = map.getZoom();
+           // basically, you want default zoom of 13 to have a radius of about 34
+           var rad = 0.00415039062 * (2 ** zoom_factor);
+           heatmap = new google.maps.visualization.HeatmapLayer({
                data: getPoints(data.heatmappy),
                radius: rad,
                map: map
-             });
+           });
        }
+
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
 
@@ -421,6 +433,7 @@ function createStaticMarkerArrays()
        {
            addMarker(data.polluters[i], "polluter");
        }
+
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
 
@@ -435,7 +448,6 @@ function getPoints(heat_list) {
         var heat_points = [];
         for (var i = 0; i < heat_list.length; i++)
         {
-            //heat_points.push(new google.maps.LatLng(heat_list[i][0], heat_list[i][1]));
             heat_points.push({location: new google.maps.LatLng(heat_list[i][0], heat_list[i][1]), weight: heat_list[i][2]});
         }
 
