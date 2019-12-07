@@ -139,6 +139,12 @@ a:hover {
     align-self: center;
 }
 
+.icon {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+}
+
 .btnsub
 {
     text-align: center;
