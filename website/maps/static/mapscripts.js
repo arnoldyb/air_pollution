@@ -6,6 +6,9 @@ var recMarkers = [];    // recommendation markers
 var sensMarkers = [];   // existing sensor markers
 var pollMarkers = [];   // polluter markers
 
+//heatmap datapoints
+var heatmapLst = [];
+
 // info window
 var info = new google.maps.InfoWindow();
 
@@ -16,8 +19,9 @@ var mCount = 0;
 var vzIndex = 1;
 
 //toggle variables
-var toggle_existing = "false";
-var toggle_polluters = "false";
+var toggle_existing = false;
+var toggle_polluters = false;
+var toggle_heatmap = false;
 
 // execute when the DOM is fully loaded
 $(function() {
@@ -38,7 +42,6 @@ $(function() {
                 {visibility: "off"}
             ]
         }
-
     ];
 
     // options for map
@@ -63,26 +66,6 @@ $(function() {
     // instantiate heatmap
     heatmap = new google.maps.visualization.HeatmapLayer({
     });
-
-    // // Add bounding box
-    // var rectangle = new google.maps.Rectangle({
-    //       strokeColor: '#ff4000',
-    //       strokeOpacity: 0.8,
-    //       strokeWeight: 2,
-    //       // fillColor: '#A9A9A9',
-    //       fillOpacity: 0.005,
-    //       map: map,
-    //       bounds: {
-    //         north: 38.008050,
-    //         south: 37.701933,
-    //         east: -122.186437,
-    //         west: -122.536985
-    //           // north: 38.063446,
-    //           // south: 37.2781261,
-    //           // east: -121.814281,
-    //           // west: -122.683496
-    //       }
-    //     });
 
     var outerCoords = [
       new google.maps.LatLng(85, 180),
@@ -208,8 +191,6 @@ function addMarker(place, type)
     });
 
     //remember marker for later
-    // markers.push(marker);
-    // marker.setMap(map);
     if (type == "recommendation") {
         recMarkers.push(marker);
         marker.setMap(map);
@@ -283,10 +264,6 @@ function removeMarkers()
 
     // reset markers
     recMarkers = [];
-
-    // reset heatmap
-    heatmap.setMap(null);
-
 }
 
 function removeExisting()
@@ -306,34 +283,6 @@ function removePolluters()
 }
 
 /**
- * Shows info window at marker with content.
- */
-// function showInfo(marker, content)
-// {
-//     // start div
-//     var div = "<div id='info'>";
-//     if (typeof(content) == "undefined")
-//     {
-//         // http://www.ajaxload.info/
-//         div += "<img alt='loading' src='/static/ajax-loader.gif'/>";
-//     }
-//     else
-//     {
-//         div += content;
-//     }
-//
-//     // end div
-//     div += "</div>";
-//
-//     // set info window's content
-//     info.setContent(div);
-//
-//     // open info window (if not already open)
-//     info.open(map, marker);
-// }
-
-
-/**
  * Updates UI's markers.
  */
 function update()
@@ -346,15 +295,11 @@ function update()
     var ne = bounds.getNorthEast();
     var sw = bounds.getSouthWest();
 
-    var toggle_heatmap = $("#toggle_heatmap").is(":checked");
-    console.log("Heatmap", toggle_heatmap);
-
     // get places within bounds (asynchronously)
     var parameters = {
         ne: ne.lat() + "," + ne.lng(),
         q: $("#q").val(),
-        sw: sw.lat() + "," + sw.lng(),
-        toggle_heatmap: $("#toggle_heatmap").is(":checked")
+        sw: sw.lat() + "," + sw.lng()
     };
     $.getJSON(Flask.url_for("update"), parameters)
     .done(function(data, textStatus, jqXHR) {
@@ -370,8 +315,8 @@ function update()
         }
 
         // add existing sensor network to map (if toggled on)
-        toggle_existing = $("#toggle_existing").is(":checked")
-        console.log("Existing Toggle", toggle_existing)
+        toggle_existing = $("#toggle_existing").is(":checked");
+        console.log("Existing Toggle", toggle_existing);
         if (toggle_existing) {
           console.log("in existing");
           for (var i = 0; i < sensMarkers.length; i++) {
@@ -382,8 +327,8 @@ function update()
         }
 
        // add polluters to map (if toggled on)
-       toggle_polluters = $("#toggle_polluters").is(":checked")
-       console.log("Polluter Toggle", toggle_polluters)
+       toggle_polluters = $("#toggle_polluters").is(":checked");
+       console.log("Polluter Toggle", toggle_polluters);
        if (toggle_polluters) {
          console.log("in polluters");
          for (var i = 0; i < pollMarkers.length; i++) {
@@ -394,21 +339,19 @@ function update()
        }
 
        // create heatmap
-
-       if (toggle_heatmap) {
-           var zoom_factor = map.getZoom();
-           // basically, you want default zoom of 13 to have a radius of about 34
-           var rad = 0.00415039062 * (2 ** zoom_factor);
-           heatmap = new google.maps.visualization.HeatmapLayer({
-               data: getPoints(data.heatmappy),
-               radius: rad,
-               map: map
-           });
-       }
-
+       var toggle_heatmap_new = $("#toggle_heatmap").is(":checked");
+       console.log("Heatmap", toggle_heatmap, toggle_heatmap_new);
+       if (toggle_heatmap != toggle_heatmap_new) {
+           toggle_heatmap = toggle_heatmap_new;
+           if (toggle_heatmap) {
+               console.log("in heatmap");
+               heatmap.setMap(map);
+           } else {
+             heatmap.setMap(null);
+           }
+         }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
-
         // log error to browser's console
         console.log(errorThrown.toString());
     });
@@ -433,6 +376,17 @@ function createStaticMarkerArrays()
        {
            addMarker(data.polluters[i], "polluter");
        }
+
+       // get data points for heatmap
+       heatmapLst = data.heatmappy;
+       // plot heatmap
+       var zoom_factor = map.getZoom();
+       // basically, you want default zoom of 13 to have a radius of about 34
+       var rad = 0.00415039062 * (2 ** zoom_factor);
+       heatmap = new google.maps.visualization.HeatmapLayer({
+           data: getPoints(heatmapLst),
+           radius: rad
+       });
 
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
