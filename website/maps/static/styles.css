@@ -140,9 +140,21 @@ a:hover {
 }
 
 .icon {
-  height: 20px;
-  width: 20px;
+  height: 14px;
+  width: 14px;
   margin-right: 5px;
+}
+
+.icon1 {
+  height: 14px;
+  width: 14px;
+  margin: 3px 5px 0px 0px;
+}
+
+.icon2 {
+  height: 10px;
+  width: 10px;
+  margin: -2px 7px 0px 2px;
 }
 
 .btnsub
