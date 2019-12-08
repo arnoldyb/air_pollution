@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Great+Vibes|Vidaloka&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="./website/styles.css" />
     <title>FairAir</title>
 </head>
@@ -18,6 +20,7 @@
                 <li><a href="#approach">Uses</a></li>
 				<!--<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>-->
                 <li><a href="#model">Model</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#helpout">Support</a></li>
                 <li><a href="#team">Team</a></li>
             </ul>
@@ -31,9 +34,8 @@
                 <p class="coverCaption">Filling the gaps in air pollution monitoring</p>
                 <a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083"><button id="coverBtn">See the Map</button></a>
             </div>
-
-            <p class="picCredit">Photo by Ren Ren on Unsplash</p>
         </div>
+        <p class="picCredit">Richmond Chevron oil refinery, 2012. Photo via Flickr Creative Commons.</p>
     </section>
 
     <section id="background">
@@ -86,19 +88,9 @@
             </div>
         </div>
     </section>
-<!--
-    <section id="demo">
-        <h1 class="introTitle">Demo</h1>
-        <div class="demoContainer">
-            <p class="demoP">Try out our San Francisco Bay Area prototype.</p>
-            <center>
-			<button class="demoButton" onclick="window.location.href = 'http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083';">Click Me!</button>
-			</center>
-		</div>
-    </section>
--->
+
     <section id="model">
-        <h1 class="approachTitle">How It Works</h1>
+        <h1 class="introTitle">How It Works</h1>
         <p class="modelDetails">
 		FairAir uses artificial intelligence techniques to predict the levels of air pollution across a region. The prediction combines hourly air and weather sensor data from PurpleAir.com, the U.S. Environmental Protection Agency, and the National Oceanic and Atmospheric Administration. The model also accounts for topography and land use.
 		</p>
@@ -109,6 +101,54 @@
 		FairAir predicts hourly PM2.5 levels at intervals of 500 meters on a regional grid. Each gridpoint is then scored on two factors: its average predicted PM2.5 level over the past seven days and the number of existing sensors in its vicinity. The user is then shown locations where both sensor coverage is sparse and predicted PM2.5 is high. Adding real-life sensors to such  areas would not only provide real-time air quality readings but also improve the accuracy of our model, which includes actual neighbor PM2.5 values as features.
 		</p>
     </section>
+
+    <section id="testimonials">
+        <h1 class="approachTitle">Testimonials</h1>
+        <div class="container">
+          <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+              <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+              <li data-target="#myCarousel" data-slide-to="1"></li>
+              <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+
+            <!-- Wrapper for slides -->
+            <div class="carousel-inner">
+              <div class="item active">
+                <p class="cust-icon">“</p>
+                <p class="demoP">It is really neat to see that you are still recommending the same locations for sensors rather than
+                  just adjusting with the slightest shift in map zoom or pan. That really builds confidence that these aren't just
+                  willy nilly calculations. </p>
+              </div>
+
+              <div class="item">
+              <p class="cust-icon">“</p>
+                <p class="demoP"> It seems to be pretty responsive. Latency between updating the number of sensors desired and those
+                  appearing on the map seems low. </p>
+              </div>
+
+              <div class="item">
+              <p class="cust-icon">“</p>
+                <p class="demoP"> I am more likely to care about this sort of tool from the perspective of social justice, advocacy,
+                  etc. Absent an a priori commitment to air quality issues, I am unlikely to think it's so chronically important that
+                  it should influence major life choices like where to live. </p>
+              </div>
+            </div>
+
+            <!-- Left and right controls -->
+            <a class="left carousel-control cust-control" href="#myCarousel" data-slide="prev">
+              <span class="glyphicon glyphicon-chevron-left"></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control cust-control" href="#myCarousel" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right"></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </div>
+    </section>
+
 
     <section id="helpout">
         <h1 class="introTitle">How To Help</h1>
@@ -170,6 +210,8 @@
         <p>FairAir is a capstone project by five UC Berkeley data science graduate students. Contact us at <a href="mailto:contact.fairair@gmail.com">contact.fairair@gmail.com.</a></p>
     </footer>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </body>
 
