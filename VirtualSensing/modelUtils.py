@@ -4,7 +4,6 @@ Functions and classes that help prepare and shape data for feeding into model
 
 import pandas as pd
 import numpy as np
-import swifter
 import datetime
 import boto3
 import s3fs
@@ -192,6 +191,9 @@ def nearest_humid_temp(line, static_lookup, humid_temp_lookup):
 
 
 def fill_in_avgs(line, val, source_df):
+    """if a particular observation is missing a value (e.g., humidity, temperature)
+    fill in with the average at that timestamp"""
+    
     if np.isnan(line[val]):
         return source_df.loc[line.ts_, val]
     else:
@@ -209,17 +211,16 @@ def get_wind(line, static_lookup_dict, noaa_lookup):
 def get_neighbors_space_time(line, neighbor_lookup):
     """
     Inputs: single observation, a dict of form {timestamp_x_y:[PA values]}
-    Outputs: vector of length 24 corresponding to surrounding neighbor observations
+    Outputs: vector of length 25 corresponding to surrounding neighbor observations
     """   
     t = line.ts_
     x = line.xy_[0]
     y = line.xy_[1]
-    neighbors = np.zeros((24))
+    neighbors = np.zeros((25))
     
     c = 0
     for i in range(-2,3):
         for j in range(-2,3):
-            if i == 0 and j == 0 : continue
             n = neighbor_lookup[f"{t}_{x+i}_{y+j}"] 
             
             if n:
@@ -230,8 +231,11 @@ def get_neighbors_space_time(line, neighbor_lookup):
 
 
 def n_neighbors(line):
+    """
+    For a given grid square, how many actual sensors are in its immediate vicinity (5x5 grid)
+    """
     c = 0
-    for n in range(24):
+    for n in range(25):
         if line[f"neighbor_{n}"] > 0:
             c +=1
     return c
