@@ -329,7 +329,7 @@ a:active {
     position: relative;
     width: 200px;
     height: 220px;
-    margin: 5px
+    margin: 15px
 }
 
 .teamPics {
@@ -408,4 +408,78 @@ a:active {
     margin-left: 19%;
     padding: 1px 16px;
     height: 1000px;
+}
+
+
+
+
+/* Responsive styles for smaller screens */
+
+@media only screen and (max-width: 600px) {
+  .overlay {
+    width: 75%;
+    left: 12%;
+  }
+  .coverCaption {
+    font-size: 20px;
+  }
+  .picCredit {
+    margin-top: -5%;
+    text-align: center;
+  }
+  #approach {
+    margin-top: -6%;
+  }
+  #approachContainer {
+    flex-direction: column;
+  }
+  .approachDivs {
+    align-self: center;
+    width: 90%;
+  }
+  #testimonials {
+    height:auto;
+  }
+  .cust-icon {
+    padding-left: 0;
+    margin-bottom: -60%;
+  }
+  .demoP {
+    height: auto;
+  }
+  #footer {
+    height: 11vh;
+  }
+  #footer p {
+    font-size: 8pt;
+  }
+}
+
+/* Styles for iPad */
+@media only screen
+  and (min-width: 768px) and (max-width: 1040px) and (-webkit-min-device-pixel-ratio: 2) {
+
+    .overlay {
+      width: 55%;
+      left: 22%;
+    }
+    .demoP {
+      font-size: 26px
+    }
+    .carousel-indicators {
+      top:99%;
+    }
+    .cust-icon {
+      margin-bottom: -30%
+    }
+}
+
+/* Styles for iPad pro */
+@media only screen
+  and (min-width: 1024px)
+  and (max-width: 1366px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+    .cust-icon {
+      margin-bottom: -20%
+    }
 }
