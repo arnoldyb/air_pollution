@@ -156,15 +156,6 @@ def update():
     else:
         q = int(request.args.get("q"))
 
-    # Check if we need to display heatmap
-    toggle_heatmap = request.args.get("toggle_heatmap")
-    if toggle_heatmap == 'false':
-        toggle_heatmap = False
-    elif toggle_heatmap == 'true':
-        toggle_heatmap = True
-    else:
-        print("Error in toggle_heatmap", toggle_heatmap)
-
     # explode southwest corner into two variables
     (sw_lat, sw_lng) = [float(s) for s in request.args.get("sw").split(",")]
     # explode northeast corner into two variables
@@ -174,11 +165,6 @@ def update():
     df_filtered = df_predictions[(df_predictions.lat > sw_lat) & (df_predictions.lat < ne_lat) &
                                  (df_predictions.lon > sw_lng) & (df_predictions.lon < ne_lng)]
     df_filtered.reset_index(inplace=True, drop=True)
-
-    if toggle_heatmap:
-        heatmap_lst = heatmap_lst_full
-    else:
-        heatmap_lst = []
 
     # sort
     df_sorted = df_filtered.sort_values(by='score', ascending=False)
@@ -236,8 +222,7 @@ def update():
             loc_lst = list(zip(top_lat, top_lon))
 
     location_json = {
-        "recommendations": loc_lst,
-        "heatmappy": heatmap_lst
+        "recommendations": loc_lst
     }
     return jsonify(location_json)
 
@@ -247,10 +232,12 @@ def getstaticmarkers():
 
     existing_lst = existing_lst_full
     polluter_lst = polluter_lst_full
+    heatmap_lst = heatmap_lst_full
 
     marker_json = {
         "existing": existing_lst,
-        "polluters": polluter_lst
+        "polluters": polluter_lst,
+        "heatmappy": heatmap_lst
     }
     return jsonify(marker_json)
 
