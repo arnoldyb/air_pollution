@@ -22,7 +22,7 @@ a:active {
     background-image: url('images/city1.jpg');
     margin-top: -20px;
     width: 100%;
-    height: 110vh;
+    height: 90vh;
     background-repeat: no-repeat;
     background-size: cover;
     text-align: center;
@@ -32,9 +32,10 @@ a:active {
 .overlay {
     width: 35%;
     position: absolute;
-    top: 25%;
-    left: 30%;
-    background-color: rgba(0, 0, 0, 0.5);
+    top: 35%;
+    left: 32%;
+    background-color:rgba(0,0,0,0.4);
+    border-radius: 8px;
     ;
 }
 
@@ -44,6 +45,7 @@ a:active {
     font-size: 38pt;
     letter-spacing: 3px;
     margin-bottom: 0;
+    padding-top: 2%;
 }
 
 .coverCaption {
@@ -51,10 +53,11 @@ a:active {
     color: #eee;
     font-size: 25px;
     letter-spacing: 1px;
+    padding: 1% 10%;
 }
 
 #coverBtn {
-    background-color: #009999;
+    background-color: #0099cc;
     color: white;
     font-size: 20px;
     padding: 8px 12px;
@@ -69,8 +72,10 @@ a:active {
 .picCredit {
     color: white;
     text-align: right;
-    padding-top: 50%;
     font-size: x-small;
+    z-index: 99;
+    position: relative;
+    margin-top: -2%;
 }
 
 #container {
@@ -97,8 +102,18 @@ a:active {
     font-size: 20px;
 }
 
+#background {
+    height: auto;
+    background-color: #d9d9d9;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-top: -30px;
+    padding-bottom: 40px;
+}
+
 .introTitle {
-    color: #009999;
+    color: #0099cc;
     font-size: 35px;
     padding: 30px;
     padding-top: 6%;
@@ -132,10 +147,11 @@ a:active {
 
 #approach {
     height: auto;
-    background-color: #3d5c5c;
+    background-color: #004d66;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-top: -3%;
 }
 
 .approachTitle {
@@ -158,10 +174,10 @@ a:active {
     width: 350px;
     height: auto;
     color: #4d4d4d;
-    background-color: #f2f2f2;
-    border: 1px solid #e6e6e6;
+    background-color: #e6e6e6;
+    /* border: 1px solid #e6e6e6; */
     border-radius: 8px;
-    box-shadow: 2px 3px #f2f2f2;
+    /* box-shadow: 2px 3px #f2f2f2; */
 }
 
 .approachDivs h3 {
@@ -176,7 +192,7 @@ a:active {
 .approachDivs hr {
     width: 70%;
     height: 2px;
-    background-color: #009999;
+    background-color: #0099cc;
     border: none;
 }
 
@@ -184,7 +200,7 @@ a:active {
 
 #model {
     height: auto;
-    background-color: #3d5c5c;
+    background-color: #d9d9d9;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
@@ -192,38 +208,80 @@ a:active {
     padding-bottom: 40px;
 }
 
+#model a {
+    color: #004d66;
+    text-decoration: underline;
+}
+
 .modelDetails {
     margin: 0 auto;
     width: 80%;
     height: auto;
     padding-bottom: 2%;
-    color: #fff;
+    color: #595959;
     line-height: 30px;
     font-size: 14pt;
 
 }
 /* Demo styles*/
 
-#demo {
+#testimonials {
     height: auto;
-    background-color: #d9d9d9;
+    background-color: #004d66;
     margin-top: -30px;
+    height: 500px;
 }
 
-.demoContainer {
+/* .demoContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
     height: auto
-}
+} */
 
 .demoP {
     text-align: center;
+    font-family: 'Great Vibes', cursive;
     font-size: 28px;
-    color: #595959;
+    /* display: flex; */
+    color: #fff;
+    height: 200px;
+    width: 80%;
+    padding: 2% 0% 5% 20%;
 }
 
-.demoButton {
+.cust-icon {
+  /* font-family: 'Vidaloka', serif; */
+  font-family: 'Great Vibes', cursive;
+  font-size: 20rem;
+  font-style: italic;
+  color: #0086b3;
+  padding-left: 13%;
+  margin-bottom: -20%;
+}
+
+.carousel-indicators {
+  /* position: absolute; */
+  /* top: 25%; */
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 15;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding-left: 0;
+  margin-right: 15%;
+  margin-left: 15%;
+  list-style: none
+}
+
+.cust-control {
+  background:None !important;
+}
+
+/* .demoButton {
     background-color: #009999;
     color: #FFFFFF;
     border-radius: 8px;
@@ -232,12 +290,17 @@ a:active {
     margin-bottom: 90px;
     align-self: center;
     cursor: pointer;
-}
+} */
 
 /* Helpout Styles */
 
 #helpout {
     padding-bottom: 40px;
+}
+
+#helpout a {
+    color: #004d66;
+    text-decoration: underline;
 }
 
 /* Team styles*/
