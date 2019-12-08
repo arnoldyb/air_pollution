@@ -6,8 +6,10 @@ var recMarkers = [];    // recommendation markers
 var sensMarkers = [];   // existing sensor markers
 var pollMarkers = [];   // polluter markers
 
-//heatmap datapoints
-var heatmapLst = [];
+//heatmap variables
+var heatmapLst = [];    // datapoints
+var zoom_factor = 0;
+var rad = 0;
 
 // info window
 var info = new google.maps.InfoWindow();
@@ -22,6 +24,9 @@ var vzIndex = 1;
 var toggle_existing = false;
 var toggle_polluters = false;
 var toggle_heatmap = false;
+
+//zoom change tracker
+var zoom_changed = false;
 
 // execute when the DOM is fully loaded
 $(function() {
@@ -223,6 +228,7 @@ function configure()
 
     // update UI after zoom level changes
     google.maps.event.addListener(map, "zoom_changed", function() {
+        zoom_changed = true;
         update();
     });
 
@@ -350,6 +356,13 @@ function update()
              heatmap.setMap(null);
            }
          }
+      if (zoom_changed) {
+        // get new zoom
+        zoom_factor = map.getZoom();
+        // basically, you want default zoom of 13 to have a radius of about 34
+        rad = 0.00415039062 * (2 ** zoom_factor);
+        heatmap.set('radius', rad);
+      }
     })
     .fail(function(jqXHR, textStatus, errorThrown) {
         // log error to browser's console
@@ -380,9 +393,9 @@ function createStaticMarkerArrays()
        // get data points for heatmap
        heatmapLst = data.heatmappy;
        // plot heatmap
-       var zoom_factor = map.getZoom();
+       zoom_factor = map.getZoom();
        // basically, you want default zoom of 13 to have a radius of about 34
-       var rad = 0.00415039062 * (2 ** zoom_factor);
+       rad = 0.00415039062 * (2 ** zoom_factor);
        heatmap = new google.maps.visualization.HeatmapLayer({
            data: getPoints(heatmapLst),
            radius: rad
