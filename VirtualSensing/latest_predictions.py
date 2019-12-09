@@ -24,6 +24,8 @@ from scipy.signal import convolve2d
 import argparse
 import subprocess
 
+import boto3
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -43,10 +45,16 @@ def main():
     else:
         END_DATE = args.end
 
-    UP_LEFT = (38.008050, -122.536985)    
-    UP_RIGHT = (38.008050, -122.186437)   
-    DOWN_RIGHT = (37.701933, -122.186437) 
-    DOWN_LEFT = (37.701933, -122.536985)
+    MIN_LAT = 37.2781261
+    MAX_LAT = 38.063446
+    MIN_LON = -122.683496
+    MAX_LON = -121.814281
+
+    UP_LEFT = (MAX_LAT, MIN_LON)    
+    UP_RIGHT = (MAX_LAT, MAX_LON)   
+    DOWN_RIGHT = (MIN_LAT, MAX_LON) 
+    DOWN_LEFT = (MIN_LAT, MIN_LON)    
+
     START_HOUR = '0'        
     END_HOUR = '24'
         
@@ -223,7 +231,14 @@ def main():
 
     
     # send to s3
-    subprocess.run(f"/home/ubuntu/miniconda3/bin/aws s3 cp latest_avg.csv s3://capstone-air-pollution/model_output/latest_avg.csv", 
-                   shell = True)
+#     subprocess.run(f"/home/ubuntu/miniconda3/bin/aws s3 cp latest_avg.csv s3://capstone-air-pollution/model_output/latest_avg.csv", 
+#                    shell = True)
+
+    s3 = boto3.client('s3')
+    s3.upload_file(
+        'latest_avg.csv', 'capstone-air-pollution', 'model_output/latest_avg.csv',
+        ExtraArgs={'ACL': 'public-read'}
+    )
+
     
 main()
