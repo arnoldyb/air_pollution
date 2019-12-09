@@ -89,10 +89,17 @@ $(function() {
     ];
 
     var innerCoords = [
-      {lat: 38.008050, lng: -122.536985},
-      {lat: 38.008050, lng: -122.186437},
-      {lat: 37.701933, lng: -122.186437},
-      {lat: 37.701933, lng: -122.536985}
+      // smaller bounding box
+//      {lat: 38.008050, lng: -122.536985},
+//      {lat: 38.008050, lng: -122.186437},
+//      {lat: 37.701933, lng: -122.186437},
+//      {lat: 37.701933, lng: -122.536985}
+
+      // larger bounding box
+      {lat: 38.063446, lng: -122.683496},
+      {lat: 38.063446, lng: -121.814281},
+      {lat: 37.2781261, lng: -121.814281},
+      {lat: 37.2781261, lng: -122.683496}
     ];
 
     // Construct the polygon, including both paths.

@@ -30,10 +30,18 @@ def distance(point1, point2):
 @app.route('/')
 def output():
     # define bounding box
-    min_lat = 37.701933
-    max_lat = 38.008050
-    max_lon = -122.186437
-    min_lon = -122.536985
+
+    # smaller bounding box
+    # min_lat = 37.701933
+    # max_lat = 38.008050
+    # max_lon = -122.186437
+    # min_lon = -122.536985
+
+    # larger bounding box
+    min_lat = 37.2781261
+    max_lat = 38.063446
+    min_lon = -122.683496
+    max_lon = -121.814281
 
     # load existing sensor network
     try:
@@ -93,13 +101,12 @@ def output():
     global df_predictions
     try:
         print("Looking for prediction file locally.", flush=True)
-        df_predictions = pd.read_csv("./preds_loneliness.csv")
+        df_predictions = pd.read_csv("latest_avg.csv")
     except:
         print("No local prediction file. Searching S3.", flush=True)
-        bucket = "midscapstone-whos-polluting-my-air"
+        bucket = "capstone-air-pollution"
         s3 = boto3.client('s3')
-        # obj = s3.get_object(Bucket= bucket, Key= 'UtilFiles/preds.csv')
-        obj = s3.get_object(Bucket=bucket, Key='UtilFiles/preds_loneliness.csv')
+        obj = s3.get_object(Bucket=bucket, Key='model_output/latest_avg.csv')
         df_predictions = pd.read_csv(obj['Body'])
     df_predictions.drop(['xy_'], axis=1, inplace=True)
 
@@ -110,14 +117,14 @@ def output():
     df_predictions['preds_normalized'] = preds_normalized
 
     # normalize loneliness
-    lonely = df_predictions[['lonely_factor']].values.astype(float)
+    lonely = 1 - df_predictions[['robust_lonely']].values.astype(float)
     lonely_factor_normalized = min_max_scaler.fit_transform(lonely)
     df_predictions['lonely_factor_normalized'] = lonely_factor_normalized
 
     # create combined score
-    loneliness_weight = 1
-    df_predictions['score'] = loneliness_weight * df_predictions['preds_normalized'] + \
-                              (1 - loneliness_weight) * df_predictions['lonely_factor_normalized']
+    loneliness_weight = .2
+    df_predictions['score'] = (1 - loneliness_weight) * df_predictions['preds_normalized'] + \
+                               loneliness_weight * df_predictions['lonely_factor_normalized']
 
     # prepare heatmap
     global heatmap_lst_full
