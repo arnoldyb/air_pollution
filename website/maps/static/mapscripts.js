@@ -364,6 +364,8 @@ function update()
            }
          }
       if (zoom_changed) {
+        //reset variable
+        zoom_changed = false;
         // get new zoom
         zoom_factor = map.getZoom();
         // basically, you want default zoom of 13 to have a radius of about 34

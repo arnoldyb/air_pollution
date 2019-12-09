@@ -241,8 +241,9 @@ a:active {
 
 .demoP {
     text-align: center;
-    font-family: 'Great Vibes', cursive;
-    font-size: 28px;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
     /* display: flex; */
     color: #fff;
     height: 200px;
