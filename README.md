@@ -4,7 +4,9 @@
 Mark Paluta
 [<img src="https://github.com/favicon.ico" width="20">](https://github.com/mpaluta)
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/markpaluta/)  
-Ben Arnoldy  
+Ben Arnoldy
+[<img src="https://github.com/favicon.ico" width="20">] (https://githubn.com/arnoldyb)
+[<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/benarnoldy/)  
 Angshuman Paul  
 Jake Miller  
 Sameed Musvee  
@@ -13,6 +15,8 @@ Group inbox:
 [contact.fairair@gmail.com](mailto:contact.fairair@gmail.com)
 
 ## Project description [Ben]
+
+FairAir shows environmental activists where air pollution is likely to be worst in a city and recommends where to deploy low-cost sensors to improve pollution mapping. Sensors are currently clustered in wealthier neighborhoods. By using a random forest machine learning model to create "virtual sensors," FairAir can highlight where new monitoring and remediation are most needed.  
 
 ## Fairair interactive map
 
