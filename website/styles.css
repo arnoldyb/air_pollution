@@ -14,15 +14,15 @@ a:active {
     text-decoration: underline;
 }
 
-#home {
-    color: #009999
+#link {
+	color: blue
 }
 
 .coverImage {
     background-image: url('images/city1.jpg');
     margin-top: -20px;
     width: 100%;
-    height: 110vh;
+    height: 90vh;
     background-repeat: no-repeat;
     background-size: cover;
     text-align: center;
@@ -32,9 +32,10 @@ a:active {
 .overlay {
     width: 35%;
     position: absolute;
-    top: 25%;
-    left: 30%;
-    background-color: rgba(0, 0, 0, 0.5);
+    top: 35%;
+    left: 32%;
+    background-color:rgba(0,0,0,0.4);
+    border-radius: 8px;
     ;
 }
 
@@ -44,37 +45,43 @@ a:active {
     font-size: 38pt;
     letter-spacing: 3px;
     margin-bottom: 0;
+    padding-top: 2%;
 }
 
 .coverCaption {
     text-align: center;
     color: #eee;
     font-size: 25px;
-    letter-spacing: 3px;
+    letter-spacing: 1px;
+    padding: 1% 10%;
 }
 
 #coverBtn {
-    background-color: #009999;
+    background-color: #0099cc;
     color: white;
     font-size: 20px;
     padding: 8px 12px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     border-radius: 10px;
+    letter-spacing: 1px;
     border: none;
     align-content: center;
+    cursor: pointer;
 }
 
 .picCredit {
     color: white;
     text-align: right;
-    padding-top: 40rem;
     font-size: x-small;
+    z-index: 99;
+    position: relative;
+    margin-top: -2%;
 }
 
 #container {
     width: 100%;
     height: 60px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgb(43, 41, 41);
     position: fixed;
     top: 0;
     z-index: 1;
@@ -95,21 +102,44 @@ a:active {
     font-size: 20px;
 }
 
+#background {
+    height: auto;
+    background-color: #d9d9d9;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-top: -30px;
+    padding-bottom: 40px;
+}
+
 .introTitle {
-    color: #009999;
+    color: #0099cc;
     font-size: 35px;
     padding: 30px;
+    padding-top: 6%;
     padding-bottom: 0;
+}
+
+.introGrab {
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    color: #595959;
+    line-height: 30px;
+    font-size: 24pt;
 }
 
 .introDetails {
     margin: 0 auto;
     width: 80%;
     height: auto;
-    padding-bottom: 5%;
+    padding-bottom: 2%;
     color: #595959;
     line-height: 30px;
     font-size: 14pt;
+
 }
 
 
@@ -117,16 +147,18 @@ a:active {
 
 #approach {
     height: auto;
-    background-color: #3d5c5c;
+    background-color: #004d66;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-top: -3%;
 }
 
 .approachTitle {
     color: #eee;
     font-size: 35px;
     padding: 30px;
+    padding-top: 6%;
     padding-bottom: 0;
 }
 
@@ -142,10 +174,10 @@ a:active {
     width: 350px;
     height: auto;
     color: #4d4d4d;
-    background-color: #f2f2f2;
-    border: 1px solid #e6e6e6;
+    background-color: #e6e6e6;
+    /* border: 1px solid #e6e6e6; */
     border-radius: 8px;
-    box-shadow: 2px 3px #f2f2f2;
+    /* box-shadow: 2px 3px #f2f2f2; */
 }
 
 .approachDivs h3 {
@@ -160,42 +192,117 @@ a:active {
 .approachDivs hr {
     width: 70%;
     height: 2px;
-    background-color: #009999;
+    background-color: #0099cc;
     border: none;
 }
 
+/* Model Styles */
 
-/* Demo styles*/
-
-#demo {
+#model {
     height: auto;
     background-color: #d9d9d9;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
     margin-top: -30px;
+    padding-bottom: 40px;
 }
 
-.demoContainer {
+#model a {
+    color: #004d66;
+    text-decoration: underline;
+}
+
+.modelDetails {
+    margin: 0 auto;
+    width: 80%;
+    height: auto;
+    padding-bottom: 2%;
+    color: #595959;
+    line-height: 30px;
+    font-size: 14pt;
+
+}
+/* Demo styles*/
+
+#testimonials {
+    height: auto;
+    background-color: #004d66;
+    margin-top: -30px;
+    height: 500px;
+}
+
+/* .demoContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
     height: auto
-}
+} */
 
 .demoP {
     text-align: center;
-    font-size: 28px;
-    color: #595959;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    /* display: flex; */
+    color: #fff;
+    height: 200px;
+    width: 80%;
+    padding: 2% 0% 5% 20%;
 }
 
-.demoButton {
+.cust-icon {
+  /* font-family: 'Vidaloka', serif; */
+  font-family: 'Great Vibes', cursive;
+  font-size: 20rem;
+  font-style: italic;
+  color: #0086b3;
+  padding-left: 13%;
+  margin-bottom: -20%;
+}
+
+.carousel-indicators {
+  /* position: absolute; */
+  /* top: 25%; */
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 15;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+  justify-content: center;
+  padding-left: 0;
+  margin-right: 15%;
+  margin-left: 15%;
+  list-style: none
+}
+
+.cust-control {
+  background:None !important;
+}
+
+/* .demoButton {
     background-color: #009999;
     color: #FFFFFF;
     border-radius: 8px;
     font-size: 22px;
     padding: 12px 18px;
-    margin-bottom: 50px;
+    margin-bottom: 90px;
     align-self: center;
+    cursor: pointer;
+} */
+
+/* Helpout Styles */
+
+#helpout {
+    padding-bottom: 40px;
 }
 
+#helpout a {
+    color: #004d66;
+    text-decoration: underline;
+}
 
 /* Team styles*/
 
@@ -213,11 +320,17 @@ a:active {
     flex-wrap: wrap;
 }
 
+.teamHeader {
+	text-align: center;
+    color: #595959;
+    font-size: 24pt;
+}
+
 .tMateContainer {
     position: relative;
     width: 200px;
     height: 220px;
-    margin: 5px
+    margin: 15px
 }
 
 .teamPics {
@@ -266,14 +379,108 @@ a:active {
 
 #footer {
     width: 100%;
-    height: 10vh;
-    background-color: #404040;
+    height: 7vh;
+    background-color: rgb(43,41,41);
+    margin-top: -11px;
 }
 
 #footer p {
     text-align: center;
     color: white;
-    padding: 22px;
-    font-size: 12pt;
+    padding-top:25px;
+    font-size: 10pt;
     margin: 0px;
+}
+
+/* Map Page Styles */
+.sideHeader {
+    list-style-type: none;
+    margin: 0;
+    margin-top: 60px;
+    padding: 0;
+    width: 20%;
+    background-color: #999999;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+#map {
+    margin-left: 19%;
+    padding: 1px 16px;
+    height: 1000px;
+}
+
+
+
+
+/* Responsive styles for smaller screens */
+
+@media only screen and (max-width: 600px) {
+  .overlay {
+    width: 75%;
+    left: 12%;
+  }
+  .coverCaption {
+    font-size: 20px;
+  }
+  .picCredit {
+    margin-top: -5%;
+    text-align: center;
+  }
+  #approach {
+    margin-top: -6%;
+  }
+  #approachContainer {
+    flex-direction: column;
+  }
+  .approachDivs {
+    align-self: center;
+    width: 90%;
+  }
+  #testimonials {
+    height:auto;
+  }
+  .cust-icon {
+    padding-left: 0;
+    margin-bottom: -60%;
+  }
+  .demoP {
+    height: auto;
+  }
+  #footer {
+    height: 11vh;
+  }
+  #footer p {
+    font-size: 8pt;
+  }
+}
+
+/* Styles for iPad */
+@media only screen
+  and (min-width: 768px) and (max-width: 1040px) and (-webkit-min-device-pixel-ratio: 2) {
+
+    .overlay {
+      width: 55%;
+      left: 22%;
+    }
+    .demoP {
+      font-size: 26px
+    }
+    .carousel-indicators {
+      top:99%;
+    }
+    .cust-icon {
+      margin-bottom: -30%
+    }
+}
+
+/* Styles for iPad pro */
+@media only screen
+  and (min-width: 1024px)
+  and (max-width: 1366px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+    .cust-icon {
+      margin-bottom: -20%
+    }
 }

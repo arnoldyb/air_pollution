@@ -1,5 +1,7 @@
 # Fairair
 
+## Contributors
+
 Mark Paluta
 [<img src="https://github.com/favicon.ico" width="20">](https://github.com/mpaluta)
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/markpaluta/)  

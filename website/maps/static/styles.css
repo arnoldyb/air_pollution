@@ -1,0 +1,180 @@
+/* allow map to fill viewport */
+html, body, #map-canvas, .container-fluid
+{
+    height: 97%;
+    margin-top: 15px;
+    padding: 0;
+    font-family: 'Slabo 27px', serif;
+}
+
+.container-fluid {
+    margin-left: 20%;
+}
+
+/* stylize info window */
+#info
+{
+    margin: 0;
+    /* allow scrollbars as needed */
+    overflow: auto;
+}
+
+#info ul
+{
+    margin-bottom: 0;
+}
+
+/* Top Bar */
+#container {
+    width: 100%;
+    height: 60px;
+    background-color: rgb(43, 41, 41);
+    position: fixed;
+    top: 0;
+    z-index: 1;
+}
+
+.topBar {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 0px;
+    padding-top: 20px;
+}
+
+.topBar li {
+    margin: 0 50px;
+    color: #eee;
+    font-size: 20px;
+}
+
+/* Top Bar Link Styles */
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:active {
+    text-decoration: underline;
+}
+
+a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Sidebar Styles */
+.sideHeader {
+    list-style-type: none;
+    margin: 0;
+    margin-top: 30px;
+    padding: 0;
+    width: 20%;
+    background-color: #555;
+    position: fixed;
+    height: 90%;
+    overflow: hidden;
+}
+
+#map {
+    margin-left: 19%;
+    padding: 1px 16px;
+    height: 1000px;
+}
+
+/* Map Instructions */
+#mapinstr {
+    color: white;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/* center form */
+#form
+{
+    position: absolute;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#form .form-group
+{
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    background-color:
+    grey;
+    width: 85%;
+    padding: 8px 5px 8px 20px;
+    margin-left: 20px;
+    border-radius: 5px;
+}
+/* stylize spinner */
+#q
+{
+    background-color: #ffffff !important;
+    width: 45px;
+    height: 20px;
+    padding: 0px 5px;
+    margin-left: 5px;
+}
+
+#spinner {
+    display: flex;
+    flex-direction: row;
+}
+
+#btnsub
+{
+    background-color:#0099cc;
+    border-radius: 5px;
+    font-size: 14px;
+    padding: 2px 5px;
+    border: none;
+    box-shadow: 2px 3px 2px
+    dimgray;
+    margin-top: 5%;
+    align-self: center;
+}
+
+.icon {
+  height: 14px;
+  width: 14px;
+  margin-right: 5px;
+}
+
+.icon1 {
+  height: 14px;
+  width: 14px;
+  margin: 3px 5px 0px 0px;
+}
+
+.icon2 {
+  height: 10px;
+  width: 10px;
+  margin: -2px 7px 0px 2px;
+}
+
+.btnsub
+{
+    text-align: center;
+}
+
+/* Footer styles*/
+#footer {
+    position: relative;
+    width: 100%;
+    height: 7vh;
+    background-color: rgb(43,41,41);
+    margin-top: -11px;
+}
+
+#footer p {
+    text-align: center;
+    color: white;
+    padding-top: 20px;
+    font-size: 10pt;
+    margin: 0px;
+}
