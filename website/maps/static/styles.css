@@ -63,6 +63,9 @@ a:hover {
     color: white;
     text-decoration: none;
 }
+a:visited {
+	color: #555;
+}
 
 /* Sidebar Styles */
 .sideHeader {
@@ -90,10 +93,30 @@ a:hover {
     margin-left: 10px;
 }
 
+.overlay {
+	visibility: hidden;
+	position: fixed;
+	z-index: 1;
+	color: white;
+    overflow: auto;
+	top: 21%;
+	left: 21%;
+    padding: 15px;
+	border: 1px;
+	border-color: #FFFFFF;
+    width: 52%;
+    background-color: #000000;
+    height: 52%;
+}
+
+#info_text {
+	color: #FFFFFF;
+}
+
 /* center form */
 #form
 {
-    position: absolute;
+    position: relative;
     width: 100%;
     margin-top: 10px;
 }

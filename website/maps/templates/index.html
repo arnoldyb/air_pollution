@@ -42,7 +42,7 @@
             <b> 1) Set number of sensors to place </b> <br>
             <b> 2) Pan, zoom to area of interest </b> <br>
             <b> 3) Pins mark <a title="Calculation balances highest predicted pollution with greatest sparsity of sensors">optimal location</a> </b> <br>
-			<b> 4) Check box, click show for other info </b> <br>
+			<b> 4) Check box, 'Show' for other info </b> <br>
 			<!--<b>    * check boxes, click show </b> <br>
 			<b>    * hover over sidebar text </b> <br>
 			<b>    * click icons on map </b>-->
@@ -62,16 +62,36 @@
                 <div class="btnsub"><input type="submit" id="btnsub" value="Show" /></div>
             </div>
         </form>
-		<br>
+		<script>
+		function toggleOverlay() {		
+		let overlayDiv = document.querySelector(".overlay");
+		console.log(overlayDiv.style.visibility);
+		if (overlayDiv.style.visibility == 'hidden')
+		overlayDiv.style.visibility = 'visible';
+		else
+		overlayDiv.style.visibility = 'hidden';
+		}
+		</script>
+		<div position=relative>
 		<p id="mapinstr">
-            <img src="/static/information_icon.svg">
-        </p>
+            <a href="javascript:toggleOverlay();"><b>Click for more details</b></a>
+		</p>
+		</div>
     </div>
     <!-- fill viewport -->
     <div class="container-fluid">
         <!-- https://developers.google.com/maps/documentation/javascript/tutorial -->
         <div id="map-canvas"></div>
     </div>
+	<div class="overlay" id="info_text" z-index=1>
+		<p id="info_text"><b>Further information about the data</b></p>
+		<p id="info_text">New sensor placements are ranked based on a combined score of highest predicted pollution levels and most distant from other sensors.</p>
+		<p id="info_text">Existing sensors are from PurpleAir.com</p>
+		<p id="info_text">Registered polluters are those facilities that reported an estimated emissions of at least 1 ton of PM/year to the California Air Resources Board in 2017. Note: Some locations may be headquarters reporting an entire organization's emissions that could occur elsewhere.</p>
+		<p id="info_text">The predicted pollution heatmap is built from a grid of points spaced 500 meters apart. FairAir uses a machine learning model to predict the average PM2.5 pollution over the past 7 days at each point on the grid. Darker red means greater pollution relative to other points on the grid; yellow and green means less.</p>
+		<div class="btnsub"><input type="submit" id="btnsub" value="Got it" onclick="toggleOverlay()"/></div>
+	</div>
+
     <footer id="footer">
         <p>FairAir is a capstone project by five UC Berkeley data science graduate students. Contact us at <a href="mailto:contact.fairair@gmail.com">contact.fairair@gmail.com.</a></p>
     </footer>
