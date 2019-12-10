@@ -47,13 +47,15 @@ Since it is possible that several high-ranking locations would be nearby grid ce
 
 ## Flask app
 
-A flask app handles communication between the back-end data pipeline and web user interface. The app [`app.py`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/app.py) reads in the following data files, searching for them locally first and then S3: 
+A flask app handles communication between the back-end data pipeline and web user interface. The app [`app.py`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/app.py) reads in the following data files, searching for them locally first and then on S3: 
 * `pasensors.parquet` -  contains coordinates for existing sensors
 * `polluters.csv` - contains names, addresses, and coordinates for known polluters
-* `latest_avg.csv` - contains PM2.5 predictions (weekly avg), loneliness factor, and coordinates for all virtual sensors
+* `latest_avg.csv` - contains PM2.5 predictions (weekly avg), loneliness factor, and coordinates for all virtual sensors  
+
 The app puts the existing sensor and polluters data into a DataFrame, tosses out locations outside the project's bounding box (i.e., the San Francisco Bay Area), and exposes the data as JSON to [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js)
 The virtual sensor PM2.5 predictions and loneliness factors, meanwhile, get normalized and combined together into a sortable score. The app requests the current boundaries of the user's map and the number of sensors to place from the web interface. The app limits the list of virtual sensors to the user's map boundaries, sorts the list by combined score, and returns the top n coordinates based on n sensors to place as JSON to [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js).
-This virtual sensor predictions are also log transformed and returned as JSON in order to make the heatmap.
+This virtual sensor predictions are also log transformed and returned as JSON in order to make the heatmap.  
+
 The [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js) takes these JSON feeds and places pins, icons, and heatmap elements based on user inputs on the sidebar of the map. This script listens for events like the pushing of the 'Show' button and panning/zooming of the map to know when to conduct updates. 
 
 
