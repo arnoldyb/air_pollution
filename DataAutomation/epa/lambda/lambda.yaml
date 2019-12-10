@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./src/
-      Handler: app.handler
+      Handler: epaapp.handler
       Runtime: python3.7
       MemorySize: 1024
       Timeout: 900
