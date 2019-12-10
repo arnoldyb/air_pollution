@@ -187,10 +187,14 @@ def addToMonthly(df, month, year):
                 wind_compass.append('ERROR')
         df['wind_compass'] = wind_compass
 
+        s3 = s3fs.S3FileSystem()
+        myopen = s3.open
+        s3_resource = boto3.resource('s3')
+
         try:
             # grab current monthly file
-            s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}}{}.parquet'.format(yr, mth)).load()
-            pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedMonthly/{}}{}.parquet'.format(yr, mth), open_with=myopen)
+            s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}{}.parquet'.format(yr, mth)).load()
+            pf=ParquetFile('midscapstone-whos-polluting-my-air/CombinedMonthly/{}{}.parquet'.format(yr, mth), open_with=myopen)
             month_df=pf.to_pandas()
             month_df = month_df.append(df,ignore_index=True)
         except:
@@ -198,9 +202,6 @@ def addToMonthly(df, month, year):
             month_df = df.copy()
 
         # Write to S3
-        s3 = s3fs.S3FileSystem()
-        myopen = s3.open
-        s3_resource = boto3.resource('s3')
         write('midscapstone-whos-polluting-my-air/CombinedMonthly/{}{}.parquet'.format(yr, mth), month_df, compression='GZIP', open_with=myopen)
         s3_resource.Object('midscapstone-whos-polluting-my-air', 'CombinedMonthly/{}{}.parquet'.format(yr, mth)).Acl().put(ACL='public-read')
     except Exception as e:
