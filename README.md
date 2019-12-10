@@ -5,7 +5,7 @@ Mark Paluta
 [<img src="https://github.com/favicon.ico" width="20">](https://github.com/mpaluta)
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/markpaluta/)  
 Ben Arnoldy
-[<img src="https://github.com/favicon.ico" width="20">] (https://githubn.com/arnoldyb)
+[<img src="https://github.com/favicon.ico" width="20">](https://github.com/arnoldyb)
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/benarnoldy/)  
 Angshuman Paul  
 Jake Miller  
@@ -14,7 +14,7 @@ Sameed Musvee
 Group inbox:
 [contact.fairair@gmail.com](mailto:contact.fairair@gmail.com)
 
-## Project description [Ben]
+## Project description
 
 FairAir shows environmental activists where air pollution is likely to be worst in a city and recommends where to deploy low-cost sensors to improve pollution mapping. Sensors are currently clustered in wealthier neighborhoods. By using a random forest machine learning model to create "virtual sensors," FairAir can highlight where new monitoring and remediation are most needed.  
 
@@ -45,4 +45,16 @@ We consider a grid of possible sensor placements and score each grid cell offlin
 
 Since it is possible that several high-ranking locations would be nearby grid cells on the map, and a user may not want to place all their sensors near one another, we needed a way to handle this scenario. Ideally, the tool would choose the best candidate, re-compute distances from existing sensors with this candidate added into the network, and repeat this cycle until all selections were made. This was too computationally intensive to deliver real-time results to a user as they pan or zoom the map, so we instead use a heuristic-based approach. We define a minimum spacing constraint between recommendations (`min_spacing` in [`app.py`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/app.py) and require that subsequent selections be at least that far from already chosen recommendations. If the tool runs out of candidates to serve the user based on this spacing constraint, it will divide the minimum spacing in half, and iteratively repeat the process until enough locations have been selected. We chose an initial minimum spacing of approximately 2km, which we believe based on working closely with potential users represents a typical minimum distance that a user would want between two sensors.
 
-## Flask app [Ben]
+## Flask app
+
+A flask app handles communication between the back-end data pipeline and web user interface. The app [`app.py`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/app.py) reads in the following data files, searching for them locally first and then S3: 
+* `pasensors.parquet` -  contains coordinates for existing sensors
+* `polluters.csv` - contains names, addresses, and coordinates for known polluters
+* `latest_avg.csv` - contains PM2.5 predictions (weekly avg), loneliness factor, and coordinates for all virtual sensors
+The app puts the existing sensor and polluters data into a DataFrame, tosses out locations outside the project's bounding box (i.e., the San Francisco Bay Area), and exposes the data as JSON to [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js)
+The virtual sensor PM2.5 predictions and loneliness factors, meanwhile, get normalized and combined together into a sortable score. The app requests the current boundaries of the user's map and the number of sensors to place from the web interface. The app limits the list of virtual sensors to the user's map boundaries, sorts the list by combined score, and returns the top n coordinates based on n sensors to place as JSON to [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js).
+This virtual sensor predictions are also log transformed and returned as JSON in order to make the heatmap.
+The [`mapscripts.js`](https://github.com/arnoldyb/air_pollution/blob/master/website/maps/static/mapscripts.js) takes these JSON feeds and places pins, icons, and heatmap elements based on user inputs on the sidebar of the map. This script listens for events like the pushing of the 'Show' button and panning/zooming of the map to know when to conduct updates. 
+
+
+
