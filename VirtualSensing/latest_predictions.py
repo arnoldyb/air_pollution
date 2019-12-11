@@ -174,7 +174,7 @@ def main():
                                  axis = 1)
     
     ## load model
-    rf = load("RF_20191206.joblib")
+    rf = load("RF_final.joblib")
     preds = rf.predict(final_input)
     input_set['preds'] = preds
     
@@ -185,7 +185,7 @@ def main():
     input_set['lonely_factor'] = 1 / (input_set['n_neighbors'] + 1)
     
     sd = START_DATE.replace("/", "")
-    input_set.to_csv(f"{sd}_all_preds.csv", index = False)
+    #input_set.to_csv(f"{sd}_all_preds.csv", index = False)
 
     ## load history from file
     if os.path.isfile("seven_day_predictions.csv"):
