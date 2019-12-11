@@ -19,24 +19,22 @@ a:active {
 }
 
 .coverImage {
-    background-image: url('images/city1.jpg');
-    margin-top: -20px;
+    background-image: url('./images/city1.jpg');
     width: 100%;
     height: 90vh;
     background-repeat: no-repeat;
     background-size: cover;
     text-align: center;
-    position: relative
+    display: flex;
+    flex-direction: column;
 }
 
 .overlay {
     width: 35%;
-    position: absolute;
-    top: 35%;
-    left: 32%;
     background-color:rgba(0,0,0,0.4);
     border-radius: 8px;
-    ;
+    align-self: center;
+    margin: auto;
 }
 
 .coverTitle {
@@ -73,9 +71,7 @@ a:active {
     color: white;
     text-align: right;
     font-size: x-small;
-    z-index: 99;
-    position: relative;
-    margin-top: -2%;
+    align-self: flex-end;
 }
 
 #container {
@@ -84,7 +80,15 @@ a:active {
     background-color: rgb(43, 41, 41);
     position: fixed;
     top: 0;
-    z-index: 1;
+    z-index: 99;
+}
+
+.toggleBars {
+  color: #fff;
+  font-size: 30px;
+  display: none;
+  padding: 0px 5px;
+  margin: 5px;
 }
 
 .topBar {
@@ -94,7 +98,9 @@ a:active {
     justify-content: center;
     margin-top: 0px;
     padding-top: 20px;
+    padding-bottom: 8px;
 }
+
 
 .topBar li {
     margin: 0 50px;
@@ -417,15 +423,30 @@ a:active {
 /* Responsive styles for smaller screens */
 
 @media only screen and (max-width: 600px) {
+  .topBar {
+    flex-direction: column;
+    display:none;
+    background-color: rgb(43, 41, 41);
+    height: 380px;
+    line-height: 2.5;
+  }
+  .active {
+    display: flex;
+   }
+
+  .toggleBars {
+    align-self: flex-end;
+    display: initial;
+    position: absolute;
+    cursor: pointer;
+  }
   .overlay {
     width: 75%;
-    left: 12%;
   }
   .coverCaption {
     font-size: 20px;
   }
   .picCredit {
-    margin-top: -5%;
     text-align: center;
   }
   #approach {
@@ -459,6 +480,23 @@ a:active {
 /* Styles for iPad */
 @media only screen
   and (min-width: 768px) and (max-width: 1040px) and (-webkit-min-device-pixel-ratio: 2) {
+    .topBar {
+      flex-direction: column;
+      display:none;
+      background-color: rgb(43, 41, 41);
+      height: 380px;
+      line-height: 2.5;
+    }
+    .active {
+      display: flex;
+     }
+
+    .toggleBars {
+      align-self: flex-end;
+      display: initial;
+      position: absolute;
+      cursor: pointer;
+    }
 
     .overlay {
       width: 55%;

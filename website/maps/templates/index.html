@@ -27,7 +27,6 @@
                 <li><a id="home" href="https://fairair.netlify.com/#home">Home</a></li>
                 <li><a href="https://fairair.netlify.com/#background">About</a></li>
                 <li><a href="https://fairair.netlify.com/#approach">Uses</a></li>
-                <!--<li><a href="http://ec2-34-217-122-20.us-west-2.compute.amazonaws.com:8083">Demo</a></li>-->
                 <li><a href="https://fairair.netlify.com/#model">Model</a></li>
                 <li><a href="https://fairair.netlify.com/#testimonials">Testimonials</a></li>
                 <li><a href="https://fairair.netlify.com/#helpout">Support</a></li>
@@ -43,10 +42,7 @@
             <b> 2) Pan, zoom to area of interest </b> <br>
             <b> 3) Pins mark <a title="Calculation balances highest predicted pollution with greatest sparsity of sensors">optimal location</a> </b> <br>
 			<b> 4) Check box, 'Show' for other info </b> <br>
-			<!--<b>    * check boxes, click show </b> <br>
-			<b>    * hover over sidebar text </b> <br>
-			<b>    * click icons on map </b>-->
-			
+
         </p>
         <!-- http://getbootstrap.com/css/#forms -->
         <form id="form">
@@ -62,20 +58,9 @@
                 <div class="btnsub"><input type="submit" id="btnsub" value="Show" /></div>
             </div>
         </form>
-		<script>
-		function toggleOverlay() {		
-		let overlayDiv = document.querySelector(".overlay");
-		console.log(overlayDiv.style.visibility);
-		if (overlayDiv.style.visibility == 'hidden')
-		overlayDiv.style.visibility = 'visible';
-		else
-		overlayDiv.style.visibility = 'hidden';
-		}
-		</script>
-		<div position=relative>
-		<p id="mapinstr">
-            <a href="javascript:toggleOverlay();"><b>Click for more details</b></a>
-		</p>
+
+		<div id="moredetails">
+            Click for more details
 		</div>
     </div>
     <!-- fill viewport -->
@@ -83,13 +68,13 @@
         <!-- https://developers.google.com/maps/documentation/javascript/tutorial -->
         <div id="map-canvas"></div>
     </div>
-	<div class="overlay" id="info_text" z-index=1>
-		<p id="info_text"><b>Further information about the data</b></p>
-		<p id="info_text">New sensor placements are ranked based on a combined score of highest predicted pollution levels and most distant from other sensors.</p>
-		<p id="info_text">Existing sensors are from PurpleAir.com</p>
-		<p id="info_text">Registered polluters are those facilities that reported an estimated emissions of at least 1 ton of PM/year to the California Air Resources Board in 2017. Note: Some locations may be headquarters reporting an entire organization's emissions that could occur elsewhere.</p>
-		<p id="info_text">The predicted pollution heatmap is built from a grid of points spaced 500 meters apart. FairAir uses a machine learning model to predict the average PM2.5 pollution over the past 7 days at each point on the grid. Darker red means greater pollution relative to other points on the grid; yellow and green means less.</p>
-		<div class="btnsub"><input type="submit" id="btnsub" value="Got it" onclick="toggleOverlay()"/></div>
+	<div id="overlay" class="overlay">
+		<p class="overlaytitle"><b>Further information about the data</b></p>
+		<p>New sensor placements are ranked based on a combined score of highest predicted pollution levels and most distant from other sensors.</p>
+		<p>Existing sensors are from PurpleAir.com</p>
+		<p>Registered polluters are those facilities that reported an estimated emissions of at least 1 ton of PM/year to the California Air Resources Board in 2017. Note: Some locations may be headquarters reporting an entire organization's emissions that could occur elsewhere.</p>
+		<p>The predicted pollution heatmap is built from a grid of points spaced 500 meters apart. FairAir uses a machine learning model to predict the average PM2.5 pollution over the past 7 days at each point on the grid. Darker red means greater pollution relative to other points on the grid; yellow and green means less.</p>
+		<div class="btngotit"><button type="button" id="btngotit">Got it</button></div>
 	</div>
 
     <footer id="footer">
