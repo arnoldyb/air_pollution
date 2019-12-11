@@ -10,7 +10,7 @@ Ben Arnoldy
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/benarnoldy/)    
 Angshuman Paul
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/angshumanpaul/)    
-Jake Miller  
+Jake Miller  [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/carrolljmiller/)
 Sameed Musvee  
 
 Group inbox:
@@ -58,12 +58,16 @@ Functions in the [thingSpeak.py](https://github.com/arnoldyb/air_pollution/blob/
 - **Data Integartion** -
 The [Data Integration Scripts](https://github.com/arnoldyb/air_pollution/tree/master/DataAutomation/all_sources/src) are deployed in Lambda using the corresponding [deployment scripts](https://github.com/arnoldyb/air_pollution/tree/master/DataAutomation/all_sources/lambda) and scheduled using AWS Cloudwatch to run at 11:15 AM Pacific every day. The [app.py](https://github.com/arnoldyb/air_pollution/blob/master/DataAutomation/all_sources/src/app.py) is used as the wrapper script to make function calls in the other scripts to get the relevant data files from S3 and combine them. The combined dataset is stored as a gzipped parquet file in S3.
 
-## Virtual sensing model [Jake]
+### Modeling pipeline and inputs
+
+We used a grid system for both our features and our predictions. `bigger_500m_grid.csv` (the 'bigger' to distinguish from our earlier file with a smaller bounding box) was generated using `create_grid_label_water.ipynb` using common geospatial Python libraries. Additionally, a GeoTiff file containing NDVI information was downloaded from [USGS Earth Explorer](https://earthexplorer.usgs.gov/), then each grid square was assigned an NDVI value.
+
+Data was pulled from S3 in `generate_data.py` were then processed in `Model_Preprocessing.ipynb`. This step was converted to PySpark after the team decided to expand the size of our bounding box.
+
+## Virtual sensing model
+A number of models were tested, but only random forest, XGBoost's gradient boosted tree regressor, and K Nearest Neighbors provided any meaningful results. Other models, including various neural networks, simply guessed around the mean and did not capture any variation in air quality. `/VirtualSensing/model_showdown.ipynb` shows the best models for random forest and XGBoost, using hyperparameters found through a series of cross-validation runs. The random forest model outscores XGBoost in RMSE and $R^2$. That model is implemented in `latest_predictions.py`, which runs on a daily basis and calculates hourly readings for each of our grid squares. Hourly readings from the previous seven days are averaged and delivered to S3 for use in the UI.
 
 ### Alternative models considered [Sameed]
-
-### Modeling pipeline and inputs [Jake]
-ex. static_csv...
 
 ## Location recommendations
 
