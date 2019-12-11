@@ -24,17 +24,34 @@ var vzIndex = 1;
 var toggle_existing = false;
 var toggle_polluters = false;
 var toggle_heatmap = false;
-
-//zoom change tracker
 var zoom_changed = false;
+var show_overlay = false;
+
+// overlay
+var overlayDiv;
 
 // execute when the DOM is fully loaded
 $(function() {
 
+    //event listener for submit button
     document.getElementById('form').addEventListener('submit', function(e) {
       update();
       e.preventDefault();
     }, false);
+
+    //event listener for more details Link
+    document.getElementById('moredetails').addEventListener('click', function() {
+      toggleOverlay();
+    });
+
+    //event listener for got it button in overlay
+    document.getElementById('btngotit').addEventListener('click', function() {
+      toggleOverlay();
+    });
+
+    //overlay
+    overlayDiv = document.getElementById("overlay");
+
     // styles for map
     // https://developers.google.com/maps/documentation/javascript/styling
     var styles = [
@@ -429,3 +446,19 @@ function getPoints(heat_list) {
 
         return heat_points;
       }
+
+// overlay for more Details
+function toggleOverlay() {
+  console.log("in toggle");
+  // let overlayDiv = document.querySelector(".overlay");
+  // overlayDiv.style.visibility = 'hidden';
+  console.log("Overlay", show_overlay);
+  if (show_overlay == false) {
+    overlayDiv.style.visibility = 'visible';
+    show_overlay = true;
+  }
+  else{
+    overlayDiv.style.visibility = 'hidden';
+    show_overlay = false;
+  }
+}
