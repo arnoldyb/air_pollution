@@ -10,7 +10,7 @@ Ben Arnoldy
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/benarnoldy/)    
 Angshuman Paul
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/angshumanpaul/)    
-Jake Miller  
+Jake Miller
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/carrolljmiller/)
 Sameed Musvee 
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/sameedmusvee/) 
