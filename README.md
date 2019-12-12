@@ -57,7 +57,7 @@ The [dailyNOAAPull.sh](https://github.com/arnoldyb/air_pollution/blob/master/Dat
 The [epaapp.py](https://github.com/arnoldyb/air_pollution/blob/master/DataAutomation/epa/src/epaapp.py) script runs on AWS Lambda and is used to ingest the raw ambient data. The [EPA lambda deployment scripts](https://github.com/arnoldyb/air_pollution/tree/master/DataAutomation/epa/lambda) are used to deploy the python script in AWS. This script is scheduled in [AWS Cloudwatch](https://aws.amazon.com/cloudwatch/) to run at 20 minutes past every hour to ingest the data for the previous hour and store it in S3.
 - **Thingspeak Data Ingestion** -
 Functions in the [thingSpeak.py](https://github.com/arnoldyb/air_pollution/blob/master/DataAutomation/all_sources/src/thingSpeak.py) script are used to ingest particulate data using Thingspeak api. This is scheduled in Lambda along with the data integration scripts as explained below.  
-- **Data Integartion** -
+- **Data Integration** -
 The [Data Integration Scripts](https://github.com/arnoldyb/air_pollution/tree/master/DataAutomation/all_sources/src) are deployed in Lambda using the corresponding [deployment scripts](https://github.com/arnoldyb/air_pollution/tree/master/DataAutomation/all_sources/lambda) and scheduled using AWS Cloudwatch to run at 11:15 AM Pacific every day. The [app.py](https://github.com/arnoldyb/air_pollution/blob/master/DataAutomation/all_sources/src/app.py) is used as the wrapper script to make function calls in the other scripts to get the relevant data files from S3 and combine them. The combined dataset is stored as a gzipped parquet file in S3.
 
 ### Modeling pipeline and inputs
