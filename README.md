@@ -12,6 +12,7 @@ Angshuman Paul
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/angshumanpaul/)    
 Jake Miller
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/carrolljmiller/)
+
 Sameed Musvee 
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/sameedmusvee/) 
 
