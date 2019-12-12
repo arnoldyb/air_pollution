@@ -11,7 +11,7 @@ Ben Arnoldy
 Angshuman Paul
 [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/angshumanpaul/)    
 Jake Miller  [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/carrolljmiller/)
-Sameed Musvee  
+Sameed Musvee [<img src="https://www.linkedin.com/favicon.ico" width="20">](https://www.linkedin.com/in/sameedmusvee/) 
 
 Group inbox:
 [contact.fairair@gmail.com](mailto:contact.fairair@gmail.com)
